@@ -1,0 +1,8 @@
+# Archivos de entorno y credenciales
+.env
+.env.local
+
+# Dependencias pesadas
+node_modules/
+dist/
+build/
