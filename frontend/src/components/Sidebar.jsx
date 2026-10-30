@@ -35,7 +35,7 @@ export const Sidebar = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-white tracking-tight">PyGo</h1>
-            <p className="text-xs text-slate-400 font-medium">Aprende Python Adaptativo</p>
+            <p className="text-xs text-slate-400 font-medium">Aprende Python</p>
           </div>
         </div>
 

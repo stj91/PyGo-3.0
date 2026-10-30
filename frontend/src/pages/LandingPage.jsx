@@ -29,7 +29,7 @@ export const LandingPage = () => {
             </div>
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-xs font-semibold">
               <IconSchool className="w-4 h-4 text-slate-500" />
-              <span>CUCEI / UdG</span>
+              <span>UDG</span>
             </div>
           </div>
 
@@ -120,9 +120,8 @@ export const LandingPage = () => {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t border-slate-200/80 py-6 text-center text-xs text-slate-500">
-        <p>PyGo — Plataforma Adaptativa de Aprendizaje de Python. Universidad de Guadalajara / CUCEI.</p>
+        <p>PyGo — 2026.</p>
       </footer>
     </div>
   );
