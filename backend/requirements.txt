@@ -1,0 +1,5 @@
+Django>=4.2,<5.0
+django-cors-headers>=4.0
+
+# Sin cliente HTTP externo: core/supabase.py habla con la API REST de Supabase
+# usando urllib de la librería estándar.
