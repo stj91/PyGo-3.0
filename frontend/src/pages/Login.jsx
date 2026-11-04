@@ -29,7 +29,7 @@ export const Login = () => {
     } catch (err) {
       if (err.isNetworkError) {
         setNetworkError(true);
-        setErrorMsg('No se pudo conectar con el servidor backend (http://localhost:5000).');
+        setErrorMsg('No se pudo conectar con el servidor backend (http://127.0.0.1:5001).');
       } else {
         setErrorMsg(err.message || 'Credenciales incorrectas. Inténtalo de nuevo.');
       }

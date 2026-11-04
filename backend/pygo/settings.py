@@ -78,8 +78,19 @@ APPEND_SLASH = False
 
 # --- CORS -------------------------------------------------------------------
 
+# Vite usa 5173 y salta a 5174, 5175... si el puerto está ocupado, así que se
+# permiten varios. Sólo orígenes de loopback: nada de comodines.
 CORS_ALLOWED_ORIGINS = list(
-    env_list(ENV, "CORS_ALLOWED_ORIGINS", default=("http://localhost:5173",))
+    env_list(
+        ENV,
+        "CORS_ALLOWED_ORIGINS",
+        default=(
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:5174",
+        ),
+    )
 )
 CORS_ALLOW_CREDENTIALS = True
 

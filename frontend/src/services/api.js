@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'http://127.0.0.1:5001/api';
 
 /**
  * Función auxiliar para realizar peticiones HTTP con manejo de token y errores de red

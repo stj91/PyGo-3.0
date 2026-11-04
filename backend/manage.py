@@ -7,11 +7,12 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 
-#: Puerto por defecto: el mismo que servía Express, porque el frontend apunta a
-#: http://localhost:5000/api. Siempre en loopback: la API no debe quedar
-#: accesible desde otras máquinas de la red.
+#: Puerto por defecto: 5001, el que espera el frontend (ver
+#: frontend/src/services/api.js). No se usa el 5000 porque en macOS lo ocupa el
+#: receptor de AirPlay (ControlCenter), que responde 403 sin cabeceras CORS.
+#: Siempre en loopback: la API no debe quedar accesible desde otras máquinas.
 DEFAULT_HOST = "127.0.0.1"
-DEFAULT_PORT = "5000"
+DEFAULT_PORT = "5001"
 
 
 def _default_addrport(argv: list) -> list:
