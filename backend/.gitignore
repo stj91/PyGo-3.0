@@ -1,8 +1,6 @@
-# Archivos de entorno y credenciales
-.env
-.env.local
-
-# Dependencias pesadas
-node_modules/
-dist/
-build/
+# .env se versiona a propósito en este proyecto.
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.log
