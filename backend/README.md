@@ -83,6 +83,8 @@ Capas equivalentes a las del refactor Java-like de `auth`: `views` ->
 |---|---|---|
 | POST | `/api/auth/registro` | pública |
 | POST | `/api/auth/login` | pública |
+| GET | `/api/carreras` | pública (alimenta el registro) |
+| GET | `/api/centros` | pública (alimenta el registro) |
 | GET | `/api/cursos` | pública (sin `usuario_id`) |
 | GET | `/api/cursos?usuario_id=X` | token, y debe ser X |
 | GET | `/api/cursos/<id>` | pública |

@@ -49,6 +49,17 @@ export const api = {
       body: JSON.stringify(datosUsuario),
     }),
 
+  // Catálogos académicos (públicos: alimentan los desplegables del registro)
+  getCentros: () =>
+    request('/centros', {
+      method: 'GET',
+    }),
+
+  getCarreras: () =>
+    request('/carreras', {
+      method: 'GET',
+    }),
+
   // Cold Start / Diagnóstico
   evaluarColdStart: (datosColdStart) =>
     request('/cold-start/evaluar', {

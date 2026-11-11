@@ -7,7 +7,7 @@ de la orquestación con efectos.
 
 import logging
 import re
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from core.errors import (
     EmailAlreadyRegisteredError,
@@ -19,8 +19,8 @@ from core.errors import (
     is_duplicate_email,
     is_invalid_credentials,
 )
-from core.functional import clean_text
 from core.http import require_fields
+from features.academico import service as academico
 
 from . import repository
 
@@ -60,14 +60,30 @@ def validar_login(credenciales: Dict[str, Any]) -> None:
     require_fields(credenciales, ("email", "password"), "Email y contraseña requeridos.")
 
 
-def construir_perfil(usuario_id: str, datos: Dict[str, Any]) -> Dict[str, Any]:
-    """Fila a insertar en `usuarios` a partir de los datos de registro. Pura."""
+def construir_perfil(
+    usuario_id: str,
+    datos: Dict[str, Any],
+    *,
+    carrera_id: Optional[int],
+    centro_id: Optional[int],
+) -> Dict[str, Any]:
+    """Fila a insertar en `usuarios` a partir de los datos de registro. Pura.
+
+    Recibe `carrera_id` y `centro_id` ya validados en lugar de validarlos aquí:
+    así sigue siendo una función pura y la comprobación contra el catálogo
+    ocurre antes de crear la cuenta de Auth.
+
+    Las columnas de texto `carrera_area_estudio` y `centro_universitario` ya no
+    se escriben: desde la migración 0004 el dato vive en los catálogos y
+    duplicarlo daría dos fuentes de verdad que acabarían discrepando. Siguen en
+    la tabla con los valores históricos de quien se registró antes.
+    """
     return {
         "id": usuario_id,
         "nombre": str(datos["nombre"]).strip(),
         "email": normalizar_email(datos["email"]),
-        "carrera_area_estudio": clean_text(datos.get("carrera_area_estudio")),
-        "centro_universitario": clean_text(datos.get("centro_universitario")),
+        "carrera_id": carrera_id,
+        "centro_id": centro_id,
         "nivel_asignado": NIVEL_INICIAL,
     }
 
@@ -114,6 +130,12 @@ def registrar_usuario(datos: Dict[str, Any]) -> Dict[str, Any]:
     nombre = str(datos["nombre"]).strip()
     password = datos["password"]
 
+    # 0. Carrera y centro, contra el catálogo. Va antes de crear nada: si el id
+    #    no existe queremos un 400 limpio, no crear una cuenta de Auth para
+    #    borrarla acto seguido en la compensación.
+    carrera_id = academico.validar_carrera(datos.get("carrera_id"))
+    centro_id = academico.validar_centro(datos.get("centro_id"))
+
     # 1. Cuenta en Supabase Auth.
     try:
         cuenta = repository.crear_cuenta_auth(email=email, password=password, nombre=nombre)
@@ -128,7 +150,11 @@ def registrar_usuario(datos: Dict[str, Any]) -> Dict[str, Any]:
 
     try:
         # 2. Perfil público con el nivel inicial.
-        usuario = repository.insertar_usuario(construir_perfil(usuario_id, datos))
+        repository.insertar_usuario(
+            construir_perfil(
+                usuario_id, datos, carrera_id=carrera_id, centro_id=centro_id
+            )
+        )
 
         # 3. Preferencias iniciales. No es crítico: el registro sigue siendo
         #    válido sin ellas y el usuario puede ajustarlas más tarde.
@@ -145,6 +171,10 @@ def registrar_usuario(datos: Dict[str, Any]) -> Dict[str, Any]:
                 "Intenta iniciar sesión manualmente."
             )
 
+        # Se relee el perfil en vez de devolver la fila insertada: así el
+        # registro responde con la misma forma que el login, con la carrera y el
+        # centro ya resueltos a su nombre en lugar de solo el id.
+        usuario = repository.buscar_usuario_con_preferencias(usuario_id)
         return {"token": sesion["token"], "usuario": usuario}
     except Exception as error:
         _revertir_cuenta_auth(usuario_id)
