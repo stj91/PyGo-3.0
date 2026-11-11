@@ -39,6 +39,21 @@ SUPABASE_TIMEOUT_SECONDS = int(env_str(ENV, "SUPABASE_TIMEOUT_SECONDS", "15"))
 # Segundos que se memoiza la validación de un token (0 desactiva la caché).
 AUTH_CACHE_SECONDS = int(env_str(ENV, "AUTH_CACHE_SECONDS", "60"))
 
+# --- Postgres directo (solo para `manage.py migrar_sql`) --------------------
+
+# La API no usa estas credenciales: habla con Supabase por REST. Son únicamente
+# para el runner de migraciones, que necesita una conexión SQL de verdad.
+#
+# Debe apuntar al pooler (Supavisor), no a db.<ref>.supabase.co: ese host solo
+# publica registro AAAA, así que desde una red sin IPv6 agota el tiempo de
+# espera. El usuario del pooler es `postgres.<project-ref>`, no `postgres`.
+SUPABASE_DB_HOST = env_str(ENV, "SUPABASE_DB_HOST")
+SUPABASE_DB_PORT = env_str(ENV, "SUPABASE_DB_PORT", "5432")
+SUPABASE_DB_NAME = env_str(ENV, "SUPABASE_DB_NAME", "postgres")
+SUPABASE_DB_USER = env_str(ENV, "SUPABASE_DB_USER")
+# Si se deja vacía, `migrar_sql` la pide por teclado y no toca el disco.
+SUPABASE_DB_PASSWORD = env_str(ENV, "SUPABASE_DB_PASSWORD")
+
 # El catálogo de cursos y el contenido de las lecciones se sirven sin sesión,
 # igual que hacía el backend Node (el frontend no protege esas rutas). Ponerlo
 # a true exige token también para leer contenido.
@@ -58,6 +73,9 @@ if _NEEDS_SUPABASE and not (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY):
 
 INSTALLED_APPS = [
     "corsheaders",
+    # No declara modelos: está aquí solo para que Django encuentre la orden de
+    # gestión `migrar_sql` en core/management/commands/.
+    "core",
 ]
 
 MIDDLEWARE = [
