@@ -15,8 +15,27 @@ python3 manage.py runserver          # escucha en 127.0.0.1:5000
 La configuración se lee de `backend/.env`; usa `.env.example` como plantilla.
 Las variables del entorno real tienen prioridad sobre el fichero.
 
-No hay migraciones ni `manage.py migrate`: los datos viven en Supabase y se
-consultan por su API REST.
+No hay migraciones de Django ni `manage.py migrate`: los datos viven en Supabase
+y se consultan por su API REST, así que no hay modelos de los que partir.
+
+El esquema y el contenido del catálogo sí se versionan, como SQL numerado en
+`migrations/`, que se aplica con
+
+```bash
+python3 manage.py migrar_sql --listar   # estado de cada migración
+python3 manage.py migrar_sql            # aplica lo pendiente
+```
+
+Las dos primeras (`0001` esquema, `0002` catálogo inicial) describen lo que ya
+existía antes de empezar a versionar, así que están **selladas**: registradas
+como aplicadas sin ejecutarse, porque correrlas sobre la base actual daría
+`42P07: relation already exists`. Sirven para recrear la base desde cero en otro
+entorno. Ver `migrations/README.md`.
+
+El runner necesita una conexión SQL de verdad (`SUPABASE_DB_*` en `.env`),
+distinta de la API REST que usa el backend. Debe apuntar al **pooler** de
+Supabase: `db.<ref>.supabase.co` solo publica IPv6 y da timeout desde una red
+sin IPv6.
 
 ## Estilo: programación funcional
 
@@ -45,6 +64,9 @@ core/                     plomería compartida
   http.py                 @endpoint, parse_json_body, require_fields
   auth.py                 require_user / require_self (verificación de token)
   supabase.py             cliente REST funcional (sólo stdlib)
+  migraciones.py          runner de migraciones SQL (delega en psql)
+  management/commands/    manage.py migrar_sql
+migrations/               esquema y contenido versionados (ver su README)
 features/<dominio>/
   repository.py           acceso a datos (efectos)
   service.py              reglas puras + orquestación
