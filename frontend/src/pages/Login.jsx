@@ -20,7 +20,7 @@ export const Login = () => {
       const res = await api.login({ email: formData.email, password: formData.password });
       if (res.success) {
         loginUser(res.usuario, res.token);
-        if (res.usuario.nivel === 'Principiante' && res.usuario.esNuevoUsuario) {
+        if (res.usuario.nivel_asignado === 'Principiante' && res.usuario.esNuevoUsuario) {
           navigate('/cold-start');
         } else {
           navigate('/dashboard');

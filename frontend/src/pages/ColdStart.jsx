@@ -14,7 +14,7 @@ const PREGUNTAS_TECNICAS = [
 
 export const ColdStart = () => {
   const navigate = useNavigate();
-  const { user, updateUser, sincronizarEstadoAdaptativo, setNetworkError } = useUser();
+  const { user, sincronizarEstadoAdaptativo, setNetworkError } = useUser();
 
   const [step, setStep] = useState(1);
   const [familiaridad, setFamiliaridad] = useState('');
@@ -65,7 +65,6 @@ export const ColdStart = () => {
 
       if (res.success) {
         setNivelCalculado(res.nivel_asignado);
-        updateUser({ nivel: res.nivel_asignado, esNuevoUsuario: false });
         if (user?.id) {
           await sincronizarEstadoAdaptativo(user.id);
         }
