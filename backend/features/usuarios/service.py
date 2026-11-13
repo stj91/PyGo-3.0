@@ -9,8 +9,9 @@ que manda el frontend se traduce a ese enum.
 from typing import Any, Dict
 
 from core import supabase
-from core.functional import clean_text, pick, to_int
+from core.functional import pick, to_int
 from core.supabase import eq
+from features.academico import service as academico
 
 MENSAJE_OK = "Configuración de usuario actualizada correctamente."
 
@@ -54,9 +55,23 @@ def cambios_preferencias(datos: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def cambios_perfil(datos: Dict[str, Any]) -> Dict[str, Any]:
-    """Campos del perfil a actualizar. Pura."""
-    carrera = clean_text(datos.get("carrera_area_estudio"))
-    return {"carrera_area_estudio": carrera} if carrera else {}
+    """Campos del perfil a actualizar.
+
+    Desde la migración 0004 la carrera y el centro son claves ajenas a sus
+    catálogos, así que se validan contra ellos: un id inexistente es un 400, no
+    una fila con un dato inventado. Ausente sigue significando «no cambiar».
+
+    Ya no se escribe `carrera_area_estudio`: esa columna quedó como registro
+    histórico de quien se registró cuando el campo era texto libre.
+    """
+    cambios: Dict[str, Any] = {}
+
+    if "carrera_id" in datos:
+        cambios["carrera_id"] = academico.validar_carrera(datos["carrera_id"])
+    if "centro_id" in datos:
+        cambios["centro_id"] = academico.validar_centro(datos["centro_id"])
+
+    return cambios
 
 
 def ignorados(datos: Dict[str, Any]) -> list:

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { api } from '../services/api';
-import { IconCode, IconUser, IconMail, IconLock, IconSchool, IconBuildingStore, IconArrowRight, IconLogin, IconAlertCircle } from '@tabler/icons-react';
+import { IconCode, IconUser, IconMail, IconLock, IconSchool, IconBuildingStore, IconArrowRight, IconLogin, IconAlertCircle, IconChevronDown, IconLoader2, IconRefresh } from '@tabler/icons-react';
 
 export const Register = () => {
   const navigate = useNavigate();
@@ -11,11 +11,48 @@ export const Register = () => {
     nombre: '',
     email: '',
     password: '',
-    carrera: 'Ingeniería en Computación',
-    centro: 'CUCEI - Sección D01'
+    // Ids, no texto: la carrera y el centro son claves ajenas a sus catálogos.
+    // Vacío de partida para obligar a elegir en vez de dejar un valor por
+    // defecto que la mayoría enviaría sin leer.
+    carrera_id: '',
+    centro_id: ''
   });
+  const [carreras, setCarreras] = useState([]);
+  const [centros, setCentros] = useState([]);
+  const [cargandoCatalogos, setCargandoCatalogos] = useState(true);
+  const [errorCatalogos, setErrorCatalogos] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const cargarCatalogos = useCallback(async () => {
+    setCargandoCatalogos(true);
+    setErrorCatalogos('');
+    try {
+      // En paralelo: son dos lecturas independientes y así el formulario se
+      // habilita en un viaje de red en lugar de dos.
+      const [resCarreras, resCentros] = await Promise.all([
+        api.getCarreras(),
+        api.getCentros()
+      ]);
+      setCarreras(resCarreras?.carreras ?? []);
+      setCentros(resCentros?.centros ?? []);
+    } catch (err) {
+      if (err.isNetworkError) setNetworkError(true);
+      // No se cae a campos de texto libre: es justo lo que generó los datos
+      // inconsistentes que estos desplegables vienen a corregir.
+      setErrorCatalogos('No se pudieron cargar las carreras y los centros.');
+      setCarreras([]);
+      setCentros([]);
+    } finally {
+      setCargandoCatalogos(false);
+    }
+  }, [setNetworkError]);
+
+  useEffect(() => {
+    cargarCatalogos();
+  }, [cargarCatalogos]);
+
+  const catalogosListos = carreras.length > 0 && centros.length > 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,8 +64,8 @@ export const Register = () => {
         email: formData.email,
         password: formData.password,
         nombre: formData.nombre,
-        carrera_area_estudio: formData.carrera,
-        centro_universitario: formData.centro
+        carrera_id: Number(formData.carrera_id),
+        centro_id: Number(formData.centro_id)
       });
 
       if (res.success) {
@@ -111,42 +148,87 @@ export const Register = () => {
             </div>
           </div>
 
+          {errorCatalogos && (
+            <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs space-y-2">
+              <div className="flex items-center gap-2 font-semibold">
+                <IconAlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errorCatalogos}</span>
+              </div>
+              <button
+                type="button"
+                onClick={cargarCatalogos}
+                className="inline-flex items-center gap-1.5 font-semibold text-amber-900 hover:text-amber-950 underline underline-offset-2"
+              >
+                <IconRefresh className="w-3.5 h-3.5" />
+                <span>Reintentar</span>
+              </button>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Carrera</label>
+              <label htmlFor="carrera" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Carrera</label>
               <div className="relative">
-                <IconSchool className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
+                <IconSchool className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select
+                  id="carrera"
                   required
-                  placeholder="Ingeniería Informática"
-                  value={formData.carrera}
-                  onChange={(e) => setFormData({ ...formData, carrera: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-                />
+                  disabled={cargandoCatalogos || carreras.length === 0}
+                  value={formData.carrera_id}
+                  onChange={(e) => setFormData({ ...formData, carrera_id: e.target.value })}
+                  className="w-full pl-10 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm appearance-none disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                >
+                  <option value="" disabled>
+                    {cargandoCatalogos ? 'Cargando...' : 'Selecciona tu carrera'}
+                  </option>
+                  {carreras.map((carrera) => (
+                    <option key={carrera.id} value={carrera.id}>
+                      {carrera.nombre}
+                    </option>
+                  ))}
+                </select>
+                {cargandoCatalogos ? (
+                  <IconLoader2 className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 animate-spin" />
+                ) : (
+                  <IconChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                )}
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Sección / Centro</label>
+              <label htmlFor="centro" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Centro Universitario</label>
               <div className="relative">
-                <IconBuildingStore className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
+                <IconBuildingStore className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select
+                  id="centro"
                   required
-                  placeholder="D01 - CUCEI"
-                  value={formData.centro}
-                  onChange={(e) => setFormData({ ...formData, centro: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-                />
+                  disabled={cargandoCatalogos || centros.length === 0}
+                  value={formData.centro_id}
+                  onChange={(e) => setFormData({ ...formData, centro_id: e.target.value })}
+                  className="w-full pl-10 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm appearance-none disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                >
+                  <option value="" disabled>
+                    {cargandoCatalogos ? 'Cargando...' : 'Selecciona tu centro'}
+                  </option>
+                  {centros.map((centro) => (
+                    <option key={centro.id} value={centro.id}>
+                      {centro.nombre}
+                    </option>
+                  ))}
+                </select>
+                {cargandoCatalogos ? (
+                  <IconLoader2 className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 animate-spin" />
+                ) : (
+                  <IconChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                )}
               </div>
             </div>
           </div>
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-slate-800 hover:bg-slate-900 disabled:opacity-50 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-2"
+            disabled={loading || !catalogosListos}
+            className="w-full bg-slate-800 hover:bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md mt-2"
           >
             <span>{loading ? 'Creando cuenta...' : 'Crear Cuenta e Iniciar Diagnóstico'}</span>
             <IconArrowRight className="w-5 h-5" />

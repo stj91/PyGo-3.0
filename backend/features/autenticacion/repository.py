@@ -5,8 +5,11 @@ from typing import Any, Dict, Optional
 from core import supabase
 from core.supabase import eq
 
-#: Columnas del perfil junto a sus preferencias embebidas.
-PERFIL_COLUMNS = "*, usuario_preferencias(*)"
+#: Columnas del perfil con sus preferencias y los catálogos embebidos.
+#: Desde la migración 0004 la carrera y el centro son claves ajenas, así que se
+#: traen sus nombres en la misma consulta: el cliente necesita el texto para
+#: mostrarlo y el id para preseleccionar el desplegable.
+PERFIL_COLUMNS = "*, usuario_preferencias(*), carreras(id,clave,nombre), centros(id,clave,nombre)"
 
 
 def crear_cuenta_auth(*, email: str, password: str, nombre: str) -> Dict[str, Any]:

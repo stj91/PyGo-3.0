@@ -9,6 +9,7 @@ from django.urls import path
 from core.http import json_response, not_found, server_error
 from django.views.decorators.csrf import csrf_exempt
 
+from features.academico import views as academico
 from features.adaptativo import views as adaptativo
 from features.autenticacion import views as autenticacion
 from features.cold_start import views as cold_start
@@ -27,6 +28,10 @@ urlpatterns = [
     # Autenticación (pública: es la puerta de entrada)
     path("api/auth/registro", autenticacion.registro),
     path("api/auth/login", autenticacion.login),
+
+    # Catálogos académicos (públicos: alimentan los desplegables del registro)
+    path("api/centros", academico.listar_centros),
+    path("api/carreras", academico.listar_carreras),
 
     # Evaluación inicial
     path("api/cold-start/evaluar", cold_start.evaluar),

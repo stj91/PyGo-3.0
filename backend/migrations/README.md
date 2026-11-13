@@ -31,6 +31,7 @@ es `postgres.<project-ref>`, no `postgres`.
 | `0001_esquema_base.sql` | 13 tablas y 5 enums: el esquema tal como estaba el 2026-11-11 | **sellada** |
 | `0002_cursos_iniciales.sql` | los 3 cursos creados a mano en el dashboard (PY-101..PY-301) | **sellada** |
 | `0003_cursos_adicionales.sql` | 5 cursos nuevos (PY-401..PY-801), 10 temas, 20 ejercicios, 80 opciones | ejecutada |
+| `0004_carreras_centros.sql` | catálogos `carreras` (30) y `centros` (17), claves ajenas en `usuarios` y relleno de los existentes | ejecutada |
 
 ## Sellar en lugar de ejecutar
 
