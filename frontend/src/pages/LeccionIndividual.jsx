@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { useUser } from '../context/UserContext';
 import { api } from '../services/api';
-import { mockCursos } from '../data/mockCursos';
+import { registrar } from '../services/eventos';
 import { normalizarLeccion } from '../data/normalizarLeccion';
 import { explicacionPlegadaInicial } from '../adaptacion/presentacionLeccion';
 import {
@@ -27,7 +27,9 @@ export const LeccionIndividual = () => {
   const [errorEnvio, setErrorEnvio] = useState('');
   const inicioLeccion = useRef(Date.now());
   const [evaluando, setEvaluando] = useState(false);
-  const [resultado, setResultado] = useState(null); // { aprobado, calificacion, porEjercicio: {[id]: {es_correcta, retroalimentacion}}, local }
+  const [resultado, setResultado] = useState(null); // { aprobado, calificacion, porEjercicio: {[id]: {es_correcta, retroalimentacion}} }
+  const [errorCarga, setErrorCarga] = useState('');
+  const [recarga, setRecarga] = useState(0);
   const [explicacionAbierta, setExplicacionAbierta] = useState(true);
 
   useEffect(() => {
@@ -40,32 +42,30 @@ export const LeccionIndividual = () => {
       setRespuestas({});
       setResultado(null);
       setErrorEnvio('');
+      setErrorCarga('');
       try {
         const data = normalizarLeccion(await api.getLeccionPorId(leccionId));
+        setLeccion(data);
         if (data) {
-          setLeccion(data);
+          registrar('tema_abierto', { objeto_tipo: 'tema', objeto_id: data.id, curso_id: Number(cursoId) || undefined });
         } else {
-          setLeccion(obtenerLeccionMock(cursoId, leccionId));
+          setErrorCarga('Esta lección no está disponible.');
         }
       } catch (err) {
         if (err.isNetworkError) setNetworkError(true);
-        setLeccion(obtenerLeccionMock(cursoId, leccionId));
+        setLeccion(null);
+        setErrorCarga(
+          err.isNetworkError
+            ? 'No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.'
+            : err.message || 'No se pudo cargar la lección.'
+        );
       } finally {
         inicioLeccion.current = Date.now();
         setLoading(false);
       }
     };
     cargarLeccion();
-  }, [leccionId, cursoId]);
-
-  const obtenerLeccionMock = (cId, lId) => {
-    const cursoMock = mockCursos.find((c) => c.id === cId) || mockCursos[0];
-    for (const mod of cursoMock.modulos) {
-      const l = mod.lecciones.find((lec) => lec.id === lId);
-      if (l) return l;
-    }
-    return cursoMock.modulos[0].lecciones[0];
-  };
+  }, [leccionId, cursoId, recarga]);
 
   const ejercicios = leccion?.ejercicios ?? [];
   const todasRespondidas = ejercicios.length > 0 && ejercicios.every((e) => respuestas[e.id] !== undefined);
@@ -76,28 +76,10 @@ export const LeccionIndividual = () => {
     setErrorEnvio('');
   };
 
-  // Contenido de ejemplo (sin conexión): sus opciones no existen en la base de
-  // datos, así que se corrige aquí y no se guarda nada.
-  const corregirLocal = () => {
-    const porEjercicio = Object.fromEntries(
-      ejercicios.map((e) => {
-        const esCorrecta = respuestas[e.id] === e.respuestaCorrecta;
-        return [e.id, { es_correcta: esCorrecta, retroalimentacion: esCorrecta ? '¡Correcto!' : 'Respuesta incorrecta.' }];
-      })
-    );
-    const aciertos = Object.values(porEjercicio).filter((r) => r.es_correcta).length;
-    const calificacion = Math.round((aciertos / ejercicios.length) * 100);
-    setResultado({ aprobado: calificacion >= 80, calificacion, porEjercicio, local: true });
-  };
-
   const handleVerificarRespuesta = async () => {
     if (!todasRespondidas) return;
     setErrorEnvio('');
 
-    if (leccion.local) {
-      corregirLocal();
-      return;
-    }
     if (!user?.id) {
       setErrorEnvio('Inicia sesión para que se corrija y se guarde tu progreso.');
       return;
@@ -115,7 +97,7 @@ export const LeccionIndividual = () => {
       const porEjercicio = Object.fromEntries(
         (res.retroalimentacion ?? []).map((r) => [r.ejercicio_id, r])
       );
-      setResultado({ aprobado: Boolean(res.aprobado), calificacion: res.calificacion, porEjercicio, local: false });
+      setResultado({ aprobado: Boolean(res.aprobado), calificacion: res.calificacion, porEjercicio });
 
       await sincronizarEstadoAdaptativo(user.id);
     } catch (err) {
@@ -136,6 +118,31 @@ export const LeccionIndividual = () => {
         <div className="flex flex-col items-center justify-center py-20 text-slate-500 space-y-3">
           <IconLoader2 className="w-8 h-8 animate-spin text-sky-500" />
           <p className="text-sm font-medium">Cargando lección y ejercicio práctico...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!leccion) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+          <h3 className="text-xl font-bold text-slate-800">No se pudo cargar la lección</h3>
+          <p className="text-sm text-slate-500">{errorCarga}</p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setRecarga((n) => n + 1)}
+              className="border border-slate-300 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-50"
+            >
+              Reintentar
+            </button>
+            <button
+              onClick={() => navigate(`/cursos/${cursoId}`)}
+              className="bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-900"
+            >
+              Volver al curso
+            </button>
+          </div>
         </div>
       </Layout>
     );
@@ -264,7 +271,6 @@ export const LeccionIndividual = () => {
                   <IconCheck className="w-5 h-5 text-emerald-600" />
                   <span>¡Excelente! Calificación: {resultado.calificacion}%</span>
                 </div>
-                {resultado.local && <p className="text-xs">Contenido de ejemplo: el resultado no se guarda.</p>}
                 <button
                   onClick={() => navigate(`/cursos/${cursoId}`)}
                   className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm"
@@ -282,9 +288,7 @@ export const LeccionIndividual = () => {
                   <span>Inténtalo de nuevo (Calificación: {resultado.calificacion}%)</span>
                 </div>
                 <p className="text-xs text-rose-700">
-                  {resultado.local
-                    ? 'Contenido de ejemplo: el resultado no se guarda.'
-                    : 'Necesitas 80 % para aprobar. Relee la explicación y vuelve a intentarlo.'}
+                  Necesitas 80 % para aprobar. Relee la explicación y vuelve a intentarlo.
                 </p>
               </div>
             )}

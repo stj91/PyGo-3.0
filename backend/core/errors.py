@@ -112,6 +112,14 @@ class MethodNotAllowedError(AppError):
     default_message = "Método no permitido."
 
 
+class NoImplementadoError(AppError):
+    """El endpoint existe pero su lógica aún no está construida."""
+
+    status_code = 501
+    code = "NOT_IMPLEMENTED"
+    default_message = "Funcionalidad en construcción."
+
+
 class DataAccessError(AppError):
     """Fallo al hablar con Supabase. Lo lanza la capa de repositorio."""
 

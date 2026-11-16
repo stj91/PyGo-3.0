@@ -1,31 +1,61 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { useUser } from '../context/UserContext';
 import { api } from '../services/api';
-import { mockCursos } from '../data/mockCursos';
-import { 
-  IconSearch, 
-  IconChevronRight, 
-  IconShieldCheck, 
-  IconLoader2, 
-  IconBook, 
-  IconBookOff, 
-  IconPlayerPlay 
+import { useRecomendaciones } from '../components/recomendaciones/useRecomendaciones';
+import { ListaRecomendaciones } from '../components/recomendaciones/SeccionRecomendaciones';
+import {
+  IconSearch,
+  IconChevronRight,
+  IconShieldCheck,
+  IconLoader2,
+  IconBook,
+  IconBookOff,
+  IconPlayerPlay,
+  IconSparkles,
+  IconGauge
 } from '@tabler/icons-react';
+
+// La dificultad solo se muestra si el curso la trae (columna de la migración 0005).
+const dificultadValida = (valor) => {
+  if (valor === null || valor === undefined || valor === '') return null;
+  const numero = Number(valor);
+  return Number.isFinite(numero) ? numero : null;
+};
+
+// Inscrito según el backend (`inscrito`, aunque el avance sea 0) o con avance.
+const esInscrito = (curso) => Boolean(curso.inscrito) || Number(curso.porcentaje_avance_global || 0) > 0;
 
 export const CatalogoCursos = () => {
   const navigate = useNavigate();
   const { user, setNetworkError } = useUser();
-  
+  const datosRecomendaciones = useRecomendaciones(8);
+  const { recomendaciones } = datosRecomendaciones;
+
+  // Recomendación por id de curso; sin respuesta del motor queda vacío y no se marca nada.
+  const recomendacionPorCurso = new Map(recomendaciones.map((r) => [String(r.curso_id), r]));
+
   const [cursos, setCursos] = useState([]);
-  const [busqueda, setBusqueda] = useState('');
+  const [searchParams] = useSearchParams();
+  const consulta = searchParams.get('q') || '';
+  const [busqueda, setBusqueda] = useState(consulta);
   const [loading, setLoading] = useState(true);
   const [tabActiva, setTabActiva] = useState('mis-cursos'); // 'mis-cursos' | 'catalogo'
+  const [errorCarga, setErrorCarga] = useState('');
+  const [recarga, setRecarga] = useState(0);
+
+  // Búsqueda desde la cabecera (?q=): se busca en todo el catálogo.
+  useEffect(() => {
+    if (!consulta) return;
+    setBusqueda(consulta);
+    setTabActiva('catalogo');
+  }, [consulta]);
 
   useEffect(() => {
     const cargarCursos = async () => {
       setLoading(true);
+      setErrorCarga('');
       try {
         const response = await api.getCursos(user?.id);
         
@@ -35,26 +65,28 @@ export const CatalogoCursos = () => {
           listaValida = response;
         } else if (response && Array.isArray(response.cursos)) {
           listaValida = response.cursos;
-        } else {
-          listaValida = mockCursos;
         }
 
         setCursos(listaValida);
+        // Sin cursos inscritos no hay nada en "Mis Cursos": se abre el catálogo.
+        if (consulta || !listaValida.some(esInscrito)) setTabActiva('catalogo');
       } catch (err) {
         if (err?.isNetworkError && setNetworkError) setNetworkError(true);
-        setCursos(mockCursos);
+        setCursos([]);
+        setErrorCarga(
+          err?.isNetworkError
+            ? 'No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.'
+            : err?.message || 'No se pudo cargar el catálogo.'
+        );
       } finally {
         setLoading(false);
       }
     };
 
     cargarCursos();
-  }, [user?.id]);
+  }, [user?.id, recarga]);
 
-  // Filtrado de la pestaña "Mis Cursos" (solo cursos con avance > 0 o inscritos)
-  const misCursos = Array.isArray(cursos) 
-    ? cursos.filter((c) => Number(c.porcentaje_avance_global || 0) > 0 || c.inscrito) 
-    : [];
+  const misCursos = Array.isArray(cursos) ? cursos.filter(esInscrito) : [];
 
   const cursosMostrados = tabActiva === 'mis-cursos' ? misCursos : (Array.isArray(cursos) ? cursos : []);
 
@@ -87,6 +119,8 @@ export const CatalogoCursos = () => {
             />
           </div>
         </div>
+
+        <ListaRecomendaciones {...datosRecomendaciones} maxTarjetas={3} mostrarContinuar={false} />
 
         {/* Pestañas de Navegación (Mis Cursos vs Catálogo) */}
         <div className="flex items-center space-x-2 border-b border-slate-200 pb-2">
@@ -127,6 +161,17 @@ export const CatalogoCursos = () => {
             <IconLoader2 className="w-8 h-8 animate-spin text-sky-500" />
             <p className="text-sm font-medium">Cargando información de cursos...</p>
           </div>
+        ) : errorCarga ? (
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-8 text-center space-y-4 max-w-md mx-auto my-6 shadow-sm">
+            <h3 className="text-lg font-bold text-slate-900">No se pudo cargar el catálogo</h3>
+            <p className="text-sm text-slate-500">{errorCarga}</p>
+            <button
+              onClick={() => setRecarga((n) => n + 1)}
+              className="border border-slate-300 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-50"
+            >
+              Reintentar
+            </button>
+          </div>
         ) : (
           <>
             {/* ESTADO VACÍO (Empty State) para "Mis Cursos" */}
@@ -157,6 +202,11 @@ export const CatalogoCursos = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {cursosFiltrados.map((curso) => {
                   const tieneAvance = Number(curso.porcentaje_avance_global || 0) > 0;
+                  const recomendacion = recomendacionPorCurso.get(String(curso.id));
+                  const dificultad = dificultadValida(curso.dificultad);
+                  const destino = recomendacion
+                    ? `/cursos/${curso.id}?origen=recomendacion&rid=${encodeURIComponent(recomendacion.recomendacion_id)}`
+                    : `/cursos/${curso.id}?origen=catalogo`;
 
                   return (
                     <div
@@ -164,11 +214,27 @@ export const CatalogoCursos = () => {
                       className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4"
                     >
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="px-3 py-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-full text-xs font-semibold flex items-center gap-1">
-                            <IconShieldCheck className="w-3.5 h-3.5" />
-                            {curso.nivel || 'Principiante'}
-                          </span>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {curso.nivel && (
+                              <span className="px-3 py-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-full text-xs font-semibold flex items-center gap-1">
+                                <IconShieldCheck className="w-3.5 h-3.5" />
+                                {curso.nivel}
+                              </span>
+                            )}
+                            {dificultad !== null && (
+                              <span className="px-3 py-1 bg-slate-50 text-slate-600 border border-slate-200 rounded-full text-xs font-semibold flex items-center gap-1">
+                                <IconGauge className="w-3.5 h-3.5" />
+                                Dificultad {dificultad}/5
+                              </span>
+                            )}
+                            {recomendacion && (
+                              <span className="px-3 py-1 bg-sky-600 text-white border border-sky-600 rounded-full text-xs font-semibold flex items-center gap-1">
+                                <IconSparkles className="w-3.5 h-3.5" />
+                                Recomendado
+                              </span>
+                            )}
+                          </div>
                           {tieneAvance && (
                             <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                               {curso.porcentaje_avance_global}% Avance
@@ -179,10 +245,16 @@ export const CatalogoCursos = () => {
                         <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">
                           {curso.descripcion}
                         </p>
+                        {recomendacion && (
+                          <p className="text-xs text-sky-700 leading-relaxed flex items-start gap-1.5">
+                            <IconSparkles className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                            <span>{recomendacion.explicacion}</span>
+                          </p>
+                        )}
                       </div>
 
                       <button
-                        onClick={() => navigate(`/cursos/${curso.id}`)}
+                        onClick={() => navigate(destino)}
                         className={`w-full rounded-xl py-2.5 px-4 text-sm font-medium flex items-center justify-center gap-2 transition-all shadow-sm ${
                           tieneAvance
                             ? 'bg-amber-500 hover:bg-amber-600 text-white'

@@ -8,6 +8,7 @@ from core.functional import index_by
 from . import repository
 
 AVANCE_POR_DEFECTO = 0
+TIPO_DIAGNOSTICO = "evaluacion_tecnica"
 
 
 # --- Reglas puras -----------------------------------------------------------
@@ -16,10 +17,11 @@ AVANCE_POR_DEFECTO = 0
 def combinar_avance(
     cursos: List[Dict[str, Any]], avances: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
-    """Añade `porcentaje_avance_global` a cada curso. Pura, no muta la entrada.
+    """Añade `porcentaje_avance_global` e `inscrito` a cada curso. Pura, no muta la entrada.
 
-    Indexar los avances por `curso_id` evita recorrer la lista de avances por
-    cada curso, a diferencia del `.find()` anidado del código original.
+    `inscrito` es True si el usuario tiene fila en `usuario_cursos` para el curso,
+    aunque su avance sea 0. Indexar los avances por `curso_id` evita recorrer la
+    lista de avances por cada curso.
     """
     por_curso = index_by("curso_id", avances)
     return [
@@ -28,9 +30,26 @@ def combinar_avance(
             "porcentaje_avance_global": por_curso.get(curso.get("id"), {}).get(
                 "porcentaje_avance_global", AVANCE_POR_DEFECTO
             ),
+            "inscrito": curso.get("id") in por_curso,
         }
         for curso in cursos
     ]
+
+
+def sin_diagnostico(ejercicios: Optional[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+    """Ejercicios sin los del diagnóstico inicial (`evaluacion_tecnica`). Pura.
+
+    Las preguntas del diagnóstico cuelgan de un tema para mapear la evidencia a
+    conceptos, pero no son contenido de la lección.
+    """
+    return [e for e in (ejercicios or []) if e.get("tipo") != TIPO_DIAGNOSTICO]
+
+
+def _tema_sin_diagnostico(tema: Dict[str, Any]) -> Dict[str, Any]:
+    """Copia del tema con sus ejercicios filtrados. Pura."""
+    if "ejercicios" not in tema:
+        return tema
+    return {**tema, "ejercicios": sin_diagnostico(tema.get("ejercicios"))}
 
 
 # --- Orquestación -----------------------------------------------------------
@@ -49,7 +68,9 @@ def obtener_curso(curso_id: Any) -> Dict[str, Any]:
     curso = repository.buscar_curso(curso_id)
     if not curso:
         raise NotFoundError("Curso no encontrado.")
-    return curso
+    if "temas" not in curso:
+        return curso
+    return {**curso, "temas": [_tema_sin_diagnostico(t) for t in curso.get("temas") or []]}
 
 
 def obtener_leccion(leccion_id: Any) -> Dict[str, Any]:
@@ -61,4 +82,4 @@ def obtener_leccion(leccion_id: Any) -> Dict[str, Any]:
     tema = repository.buscar_tema(leccion_id)
     if not tema:
         raise NotFoundError("Lección no encontrada.")
-    return tema
+    return _tema_sin_diagnostico(tema)

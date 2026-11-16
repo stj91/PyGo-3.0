@@ -1,6 +1,6 @@
 """Vista HTTP de evaluación de módulos."""
 
-from core.auth import require_self
+from core.auth import require_self, require_user
 from core.http import endpoint, parse_json_body
 
 from . import service
@@ -11,8 +11,10 @@ def evaluar_modulo(request):
     """POST /api/evaluaciones/evaluar-modulo
 
     Registra intentos y progreso del usuario, así que exige ser ese usuario.
-    La respuesta no lleva clave `success`: se conserva el contrato original.
+    Sin sesión es 401 aunque falte el `usuario_id`. La respuesta no lleva clave
+    `success`: se conserva el contrato original.
     """
+    require_user(request)
     datos = parse_json_body(request)
 
     if datos.get("usuario_id"):

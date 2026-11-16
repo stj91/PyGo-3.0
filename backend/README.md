@@ -95,6 +95,14 @@ Capas equivalentes a las del refactor Java-like de `auth`: `views` ->
 | GET | `/api/adaptativo/estado/<id>` | token, y debe ser `<id>` |
 | PUT | `/api/usuarios/configuracion/<id>` | token, y debe ser `<id>` |
 | GET | `/health` | pública |
+| GET | `/api/motor/areas` | pública (áreas de interés) |
+| GET | `/api/cold-start/preguntas` | token (en construcción) |
+| POST | `/api/eventos` | token; `usuario_id` del cuerpo debe ser el llamante (en construcción) |
+| POST | `/api/cursos/<id>/inscripcion` | token (en construcción) |
+| GET | `/api/perfil/<id>` | token, y debe ser `<id>` (en construcción) |
+| PUT | `/api/perfil/<id>/intereses` | token, y debe ser `<id>` (en construcción) |
+| GET | `/api/recomendaciones/cursos?usuario_id=X` | token, y debe ser X (en construcción) |
+| POST | `/api/retroalimentacion` | token; la recomendación debe ser del llamante (en construcción) |
 
 ## Autenticación
 

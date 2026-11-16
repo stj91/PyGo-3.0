@@ -1,0 +1,253 @@
+[
+  {
+    "id": 1,
+    "codigo": "F01",
+    "nombre": "Prerrequisitos completados",
+    "descripcion": "Un curso solo se recomienda si el alumno completó cada uno de sus prerrequisitos con al menos la calificación mínima. Por qué: el contenido de un curso se apoya en lo aprendido en los anteriores; saltarse esa base lleva a frustración y abandono.",
+    "ambito": "filtro",
+    "condicion": {},
+    "accion": {},
+    "prioridad": 100,
+    "activa": false
+  },
+  {
+    "id": 3,
+    "codigo": "F03",
+    "nombre": "Sin cursos ya inscritos",
+    "descripcion": "No se recomiendan cursos en los que el alumno ya está inscrito como activo o completado; los abandonados vuelven a ser candidatos. Siempre se aplica: esta fila solo lo documenta. Por qué: recomendar lo que ya se cursa no aporta nada; los cursos en marcha aparecen aparte, en Continúa.",
+    "ambito": "filtro",
+    "condicion": {},
+    "accion": {},
+    "prioridad": 100,
+    "activa": true
+  },
+  {
+    "id": 2,
+    "codigo": "F02",
+    "nombre": "Prerrequisito cubierto por nivel y dominio",
+    "descripcion": "Un prerrequisito no completado cuenta como cumplido si el nivel del alumno es igual o superior al del curso requerido y su dominio de los conceptos de ese curso llega al mínimo configurado (F02_DOMINIO_MINIMO). Por qué: quien ya sabe algo no debería repetirlo para avanzar; la evidencia de dominio sustituye al trámite.",
+    "ambito": "filtro",
+    "condicion": {},
+    "accion": {},
+    "prioridad": 90,
+    "activa": true
+  },
+  {
+    "id": 5,
+    "codigo": "R02",
+    "nombre": "Siguiente en la ruta",
+    "descripcion": "Si el alumno ha completado algún curso, se favorecen los cursos cuyos prerrequisitos están todos aprobados. Por qué: continuar justo donde se dejó aprovecha lo recién aprendido mientras está fresco y mantiene una progresión coherente.",
+    "ambito": "recomendacion",
+    "condicion": {
+      "campo": "cursos_completados",
+      "op": "existe"
+    },
+    "accion": {
+      "filtro": {
+        "campo": "curso.es_siguiente_en_ruta",
+        "op": "=",
+        "valor": true
+      },
+      "puntos": 4,
+      "explicacion": "Es el siguiente paso después de {curso.prerrequisito_titulo}."
+    },
+    "prioridad": 90,
+    "activa": true
+  },
+  {
+    "id": 10,
+    "codigo": "R05",
+    "nombre": "Repaso pendiente",
+    "descripcion": "Si el alumno tiene módulos en refuerzo, se penalizan los cursos que dependen del curso que está repasando. Por qué: avanzar sobre una base que aún no se domina acumula lagunas; conviene consolidar antes de seguir.",
+    "ambito": "recomendacion",
+    "condicion": {
+      "campo": "tiene_refuerzo",
+      "op": "=",
+      "valor": true
+    },
+    "accion": {
+      "filtro": {
+        "campo": "curso.prerrequisito_en_refuerzo",
+        "op": "=",
+        "valor": true
+      },
+      "puntos": -3,
+      "explicacion": "Te conviene terminar el repaso de {curso.prerrequisito_refuerzo_titulo} antes."
+    },
+    "prioridad": 80,
+    "activa": true
+  },
+  {
+    "id": 12,
+    "codigo": "R07",
+    "nombre": "Prerrequisito pendiente",
+    "descripcion": "Se resta puntuación a los cursos con algún prerrequisito que el alumno no ha completado ni domina (nivel y dominio suficientes, como F02). Por qué: lo recomendable es seguir el orden del temario, pero el alumno decide dónde empieza; el curso no se oculta.",
+    "ambito": "recomendacion",
+    "condicion": {},
+    "accion": {
+      "filtro": {
+        "campo": "curso.prerrequisito_pendiente",
+        "op": "=",
+        "valor": true
+      },
+      "puntos": -2,
+      "explicacion": "Te conviene haber visto {curso.prerrequisito_pendiente_titulo} antes."
+    },
+    "prioridad": 75,
+    "activa": true
+  },
+  {
+    "id": 9,
+    "codigo": "R04",
+    "nombre": "Coincide con sus intereses",
+    "descripcion": "Si el alumno tiene intereses, se favorecen los cursos que tratan alguno de esos temas. Por qué: aprender sobre lo que a uno le importa aumenta la motivación intrínseca y la persistencia.",
+    "ambito": "recomendacion",
+    "condicion": {
+      "campo": "intereses",
+      "op": "existe"
+    },
+    "accion": {
+      "filtro": {
+        "campo": "curso.coincide_interes",
+        "op": "=",
+        "valor": true
+      },
+      "puntos": 2,
+      "explicacion": "Coincide con tu interés en {curso.area_nombre}."
+    },
+    "prioridad": 70,
+    "activa": true
+  },
+  {
+    "id": 6,
+    "codigo": "R03a",
+    "nombre": "Encaja con el nivel (Principiante)",
+    "descripcion": "Si el nivel del alumno es Principiante, se favorecen los cursos de nivel Principiante. Por qué: un reto ajustado al nivel (ni trivial ni inalcanzable) es el que más aprendizaje produce.",
+    "ambito": "recomendacion",
+    "condicion": {
+      "campo": "nivel",
+      "op": "=",
+      "valor": "Principiante"
+    },
+    "accion": {
+      "filtro": {
+        "campo": "curso.nivel",
+        "op": "=",
+        "valor": "Principiante"
+      },
+      "puntos": 2,
+      "explicacion": "Encaja con tu nivel {nivel}."
+    },
+    "prioridad": 60,
+    "activa": true
+  },
+  {
+    "id": 7,
+    "codigo": "R03b",
+    "nombre": "Encaja con el nivel (Intermedio)",
+    "descripcion": "Si el nivel del alumno es Intermedio, se favorecen los cursos de nivel Intermedio. Por qué: un reto ajustado al nivel (ni trivial ni inalcanzable) es el que más aprendizaje produce.",
+    "ambito": "recomendacion",
+    "condicion": {
+      "campo": "nivel",
+      "op": "=",
+      "valor": "Intermedio"
+    },
+    "accion": {
+      "filtro": {
+        "campo": "curso.nivel",
+        "op": "=",
+        "valor": "Intermedio"
+      },
+      "puntos": 2,
+      "explicacion": "Encaja con tu nivel {nivel}."
+    },
+    "prioridad": 60,
+    "activa": true
+  },
+  {
+    "id": 8,
+    "codigo": "R03c",
+    "nombre": "Encaja con el nivel (Avanzado)",
+    "descripcion": "Si el nivel del alumno es Avanzado, se favorecen los cursos de nivel Avanzado. Por qué: un reto ajustado al nivel (ni trivial ni inalcanzable) es el que más aprendizaje produce.",
+    "ambito": "recomendacion",
+    "condicion": {
+      "campo": "nivel",
+      "op": "=",
+      "valor": "Avanzado"
+    },
+    "accion": {
+      "filtro": {
+        "campo": "curso.nivel",
+        "op": "=",
+        "valor": "Avanzado"
+      },
+      "puntos": 2,
+      "explicacion": "Encaja con tu nivel {nivel}."
+    },
+    "prioridad": 60,
+    "activa": true
+  },
+  {
+    "id": 4,
+    "codigo": "R01",
+    "nombre": "Punto de partida",
+    "descripcion": "Si el alumno aún no ha completado ningún curso, se favorecen los cursos de dificultad 1. Por qué: empezar con éxitos tempranos y alcanzables refuerza la motivación y construye la base del resto de la ruta.",
+    "ambito": "recomendacion",
+    "condicion": {
+      "todas": [
+        {
+          "ninguna": [
+            {
+              "campo": "cursos_completados",
+              "op": "existe"
+            }
+          ]
+        },
+        {
+          "campo": "nivel",
+          "op": "=",
+          "valor": "Principiante"
+        }
+      ]
+    },
+    "accion": {
+      "filtro": {
+        "campo": "curso.dificultad",
+        "op": "=",
+        "valor": 1
+      },
+      "puntos": 3,
+      "explicacion": "Es un buen punto de partida para empezar con Python."
+    },
+    "prioridad": 50,
+    "activa": true
+  },
+  {
+    "id": 11,
+    "codigo": "R06",
+    "nombre": "Demasiado difícil por ahora",
+    "descripcion": "Se penalizan los cursos de dificultad 4 o más cuando el dominio del alumno sobre sus conceptos es menor que 0.4. Solo baja la puntuación, sin mostrar un motivo. Por qué: un reto muy por encima de lo que se domina desanima; es mejor proponerlo cuando el alumno esté más cerca.",
+    "ambito": "recomendacion",
+    "condicion": {},
+    "accion": {
+      "filtro": {
+        "todas": [
+          {
+            "campo": "curso.dificultad",
+            "op": ">=",
+            "valor": 4
+          },
+          {
+            "campo": "curso.dominio_conceptos_curso",
+            "op": "<",
+            "valor": 0.4
+          }
+        ]
+      },
+      "puntos": -2,
+      "explicacion": ""
+    },
+    "prioridad": 40,
+    "activa": true
+  }
+]

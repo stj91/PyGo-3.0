@@ -1,23 +1,16 @@
-// Convierte una lección a la forma que usa LeccionIndividual:
-//   { id, titulo, teoria: {introduccion, explicacion, codigoEjemplo}, local,
-//     ejercicios: [{ id, titulo, consigna, codigo, opciones: [{id, texto}],
-//                    respuestaCorrecta?, explicacionRespuesta? }] }
-//
-// Acepta la respuesta de GET /lecciones/:id ({ success, leccion }) y las
-// lecciones de mockCursos.js. `local: true` marca el contenido de ejemplo: sus
-// opciones no existen en la base de datos y sólo pueden corregirse en el navegador.
+// Convierte la respuesta de GET /lecciones/:id ({ success, leccion }) a la forma
+// que usa LeccionIndividual:
+//   { id, titulo, teoria: {introduccion, explicacion, codigoEjemplo},
+//     ejercicios: [{ id, titulo, consigna, codigo, opciones: [{id, texto}] }] }
 export const normalizarLeccion = (data) => {
   if (!data) return null;
   if ('success' in data && !data.leccion) return null;
   const raw = data.leccion ?? data;
   if (!raw || typeof raw !== 'object') return null;
 
-  if (raw.teoria || raw.ejercicio) return normalizarMock(raw);
-
   return {
     id: raw.id,
     titulo: raw.titulo,
-    local: false,
     teoria: { introduccion: '', explicacion: raw.descripcion ?? '', codigoEjemplo: '' },
     ejercicios: (raw.ejercicios ?? []).map((ejercicio) => ({
       id: ejercicio.id,
@@ -30,23 +23,3 @@ export const normalizarLeccion = (data) => {
     })),
   };
 };
-
-const normalizarMock = (raw) => ({
-  id: raw.id,
-  titulo: raw.titulo,
-  local: true,
-  teoria: raw.teoria ?? {},
-  ejercicios: raw.ejercicio
-    ? [
-        {
-          id: `${raw.id}-ejercicio`,
-          titulo: raw.titulo,
-          consigna: raw.ejercicio.consigna,
-          codigo: raw.ejercicio.codigo,
-          opciones: (raw.ejercicio.opciones ?? []).map((texto, idx) => ({ id: idx, texto })),
-          respuestaCorrecta: raw.ejercicio.respuestaCorrecta,
-          explicacionRespuesta: raw.ejercicio.explicacionRespuesta,
-        },
-      ]
-    : [],
-});

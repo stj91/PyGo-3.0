@@ -3,11 +3,11 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   IconLayoutDashboard,
   IconBook,
-  IconListCheck,
   IconSettings,
   IconLogout,
   IconCode,
-  IconHelpCircle
+  IconHelpCircle,
+  IconUserCircle
 } from '@tabler/icons-react';
 
 export const Sidebar = () => {
@@ -16,7 +16,7 @@ export const Sidebar = () => {
   const navItems = [
     { label: 'Tablero Principal', path: '/dashboard', icon: IconLayoutDashboard },
     { label: 'Mis Cursos', path: '/cursos', icon: IconBook },
-    { label: 'Temario y Módulos', path: '/cursos/1', icon: IconListCheck },
+    { label: 'Mi perfil', path: '/perfil', icon: IconUserCircle },
     { label: 'Configuración', path: '/configuracion', icon: IconSettings },
   ];
 

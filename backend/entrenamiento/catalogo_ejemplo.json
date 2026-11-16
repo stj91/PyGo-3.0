@@ -1,0 +1,550 @@
+{
+  "cursos": {
+    "1": {
+      "id": 1,
+      "codigo_curso": "PY-101",
+      "titulo": "Fundamentos de Python",
+      "descripcion": "Aprende las bases esenciales del lenguaje: variables, sintaxis y tipos de datos compuestas.",
+      "dificultad": 1,
+      "nivel": "Principiante",
+      "publicado": true,
+      "conceptos": {
+        "variables_tipos": 1.0,
+        "colecciones": 0.6
+      },
+      "areas": [
+        "fundamentos"
+      ],
+      "prerrequisitos": [],
+      "temas": [
+        {
+          "id": 1,
+          "curso_id": 1,
+          "orden": 1,
+          "titulo": "Sintaxis y Variables",
+          "conceptos": {
+            "variables_tipos": 1.0
+          }
+        },
+        {
+          "id": 2,
+          "curso_id": 1,
+          "orden": 2,
+          "titulo": "Tipos de Datos Compuestos",
+          "conceptos": {
+            "colecciones": 1.0
+          }
+        }
+      ]
+    },
+    "2": {
+      "id": 2,
+      "codigo_curso": "PY-201",
+      "titulo": "Estructuras de Control",
+      "descripcion": "Domina la toma de decisiones con bloques condicionales (if/else) e iteraciones con bucles (for/while).",
+      "dificultad": 1,
+      "nivel": "Principiante",
+      "publicado": true,
+      "conceptos": {
+        "condicionales": 1.0,
+        "bucles": 1.0
+      },
+      "areas": [
+        "fundamentos"
+      ],
+      "prerrequisitos": [
+        {
+          "curso_id": 1,
+          "calificacion_minima": 80.0
+        }
+      ],
+      "temas": [
+        {
+          "id": 3,
+          "curso_id": 2,
+          "orden": 1,
+          "titulo": "Condicionales if / else",
+          "conceptos": {
+            "condicionales": 1.0
+          }
+        },
+        {
+          "id": 4,
+          "curso_id": 2,
+          "orden": 2,
+          "titulo": "Bucles e Iteraciones",
+          "conceptos": {
+            "bucles": 1.0
+          }
+        }
+      ]
+    },
+    "3": {
+      "id": 3,
+      "codigo_curso": "PY-301",
+      "titulo": "Programación Orientada a Objetos",
+      "descripcion": "Diseña software modular creando clases, objetos, métodos y atributos en Python.",
+      "dificultad": 3,
+      "nivel": "Intermedio",
+      "publicado": true,
+      "conceptos": {
+        "poo_clases": 1.0
+      },
+      "areas": [
+        "poo"
+      ],
+      "prerrequisitos": [
+        {
+          "curso_id": 4,
+          "calificacion_minima": 80.0
+        }
+      ],
+      "temas": [
+        {
+          "id": 5,
+          "curso_id": 3,
+          "orden": 1,
+          "titulo": "Clases y Objetos",
+          "conceptos": {
+            "poo_clases": 1.0
+          }
+        }
+      ]
+    },
+    "4": {
+      "id": 4,
+      "codigo_curso": "PY-401",
+      "titulo": "Funciones y Modularidad",
+      "descripcion": "Escribe código reutilizable con funciones: parámetros, valores de retorno, alcance de variables y organización en módulos.",
+      "dificultad": 2,
+      "nivel": "Principiante",
+      "publicado": true,
+      "conceptos": {
+        "funciones": 1.0,
+        "modulos": 0.7
+      },
+      "areas": [
+        "automatizacion",
+        "fundamentos"
+      ],
+      "prerrequisitos": [
+        {
+          "curso_id": 2,
+          "calificacion_minima": 80.0
+        }
+      ],
+      "temas": [
+        {
+          "id": 6,
+          "curso_id": 4,
+          "orden": 1,
+          "titulo": "Definición y Parámetros",
+          "conceptos": {
+            "funciones": 1.0
+          }
+        },
+        {
+          "id": 7,
+          "curso_id": 4,
+          "orden": 2,
+          "titulo": "Alcance y Módulos",
+          "conceptos": {
+            "modulos": 0.7,
+            "funciones": 0.3
+          }
+        }
+      ]
+    },
+    "5": {
+      "id": 5,
+      "codigo_curso": "PY-501",
+      "titulo": "Colecciones Avanzadas y Comprensiones",
+      "descripcion": "Organiza datos con diccionarios y conjuntos, y transforma colecciones en una sola línea con comprensiones de listas.",
+      "dificultad": 3,
+      "nivel": "Intermedio",
+      "publicado": true,
+      "conceptos": {
+        "diccionarios_conjuntos": 1.0,
+        "comprensiones": 1.0,
+        "colecciones": 0.5
+      },
+      "areas": [
+        "datos",
+        "fundamentos"
+      ],
+      "prerrequisitos": [
+        {
+          "curso_id": 4,
+          "calificacion_minima": 80.0
+        }
+      ],
+      "temas": [
+        {
+          "id": 8,
+          "curso_id": 5,
+          "orden": 1,
+          "titulo": "Diccionarios y Conjuntos",
+          "conceptos": {
+            "diccionarios_conjuntos": 1.0
+          }
+        },
+        {
+          "id": 9,
+          "curso_id": 5,
+          "orden": 2,
+          "titulo": "Comprensión de Listas",
+          "conceptos": {
+            "comprensiones": 1.0
+          }
+        }
+      ]
+    },
+    "6": {
+      "id": 6,
+      "codigo_curso": "PY-601",
+      "titulo": "Manejo de Errores y Archivos",
+      "descripcion": "Escribe programas que no se detienen ante lo inesperado: captura excepciones con try/except y lee o escribe ficheros de forma segura.",
+      "dificultad": 3,
+      "nivel": "Intermedio",
+      "publicado": true,
+      "conceptos": {
+        "excepciones": 1.0,
+        "archivos": 1.0
+      },
+      "areas": [
+        "automatizacion"
+      ],
+      "prerrequisitos": [
+        {
+          "curso_id": 4,
+          "calificacion_minima": 80.0
+        }
+      ],
+      "temas": [
+        {
+          "id": 10,
+          "curso_id": 6,
+          "orden": 1,
+          "titulo": "Excepciones con try / except",
+          "conceptos": {
+            "excepciones": 1.0
+          }
+        },
+        {
+          "id": 11,
+          "curso_id": 6,
+          "orden": 2,
+          "titulo": "Lectura y Escritura de Ficheros",
+          "conceptos": {
+            "archivos": 1.0
+          }
+        }
+      ]
+    },
+    "7": {
+      "id": 7,
+      "codigo_curso": "PY-701",
+      "titulo": "Herencia y Polimorfismo",
+      "descripcion": "Reutiliza y especializa clases mediante herencia, sobrescritura de métodos y polimorfismo aplicados al diseño orientado a objetos.",
+      "dificultad": 4,
+      "nivel": "Avanzado",
+      "publicado": true,
+      "conceptos": {
+        "herencia_polimorfismo": 1.0,
+        "poo_clases": 0.6
+      },
+      "areas": [
+        "poo"
+      ],
+      "prerrequisitos": [
+        {
+          "curso_id": 3,
+          "calificacion_minima": 80.0
+        }
+      ],
+      "temas": [
+        {
+          "id": 12,
+          "curso_id": 7,
+          "orden": 1,
+          "titulo": "Herencia entre Clases",
+          "conceptos": {
+            "herencia_polimorfismo": 1.0
+          }
+        },
+        {
+          "id": 13,
+          "curso_id": 7,
+          "orden": 2,
+          "titulo": "Sobrescritura y Polimorfismo",
+          "conceptos": {
+            "herencia_polimorfismo": 0.7,
+            "poo_clases": 0.3
+          }
+        }
+      ]
+    },
+    "8": {
+      "id": 8,
+      "codigo_curso": "PY-801",
+      "titulo": "Librerías y Datos Externos",
+      "descripcion": "Conecta tus programas con el mundo: módulos de la librería estándar, datos en formato JSON y consumo de APIs.",
+      "dificultad": 4,
+      "nivel": "Avanzado",
+      "publicado": true,
+      "conceptos": {
+        "libreria_estandar": 1.0,
+        "json_apis": 1.0,
+        "modulos": 0.5
+      },
+      "areas": [
+        "automatizacion",
+        "datos"
+      ],
+      "prerrequisitos": [
+        {
+          "curso_id": 5,
+          "calificacion_minima": 80.0
+        },
+        {
+          "curso_id": 6,
+          "calificacion_minima": 80.0
+        }
+      ],
+      "temas": [
+        {
+          "id": 14,
+          "curso_id": 8,
+          "orden": 1,
+          "titulo": "La Librería Estándar",
+          "conceptos": {
+            "libreria_estandar": 1.0
+          }
+        },
+        {
+          "id": 15,
+          "curso_id": 8,
+          "orden": 2,
+          "titulo": "JSON y Consumo de APIs",
+          "conceptos": {
+            "json_apis": 1.0
+          }
+        }
+      ]
+    }
+  },
+  "conceptos": {
+    "fundamentos": {
+      "id": 1,
+      "clave": "fundamentos",
+      "nombre": "Fundamentos",
+      "area": null
+    },
+    "poo": {
+      "id": 2,
+      "clave": "poo",
+      "nombre": "Programación orientada a objetos",
+      "area": null
+    },
+    "datos": {
+      "id": 3,
+      "clave": "datos",
+      "nombre": "Datos",
+      "area": null
+    },
+    "automatizacion": {
+      "id": 4,
+      "clave": "automatizacion",
+      "nombre": "Automatización",
+      "area": null
+    },
+    "variables_tipos": {
+      "id": 5,
+      "clave": "variables_tipos",
+      "nombre": "Variables y tipos",
+      "area": "fundamentos"
+    },
+    "colecciones": {
+      "id": 6,
+      "clave": "colecciones",
+      "nombre": "Listas y tuplas",
+      "area": "fundamentos"
+    },
+    "condicionales": {
+      "id": 7,
+      "clave": "condicionales",
+      "nombre": "Condicionales",
+      "area": "fundamentos"
+    },
+    "bucles": {
+      "id": 8,
+      "clave": "bucles",
+      "nombre": "Bucles",
+      "area": "fundamentos"
+    },
+    "funciones": {
+      "id": 9,
+      "clave": "funciones",
+      "nombre": "Funciones",
+      "area": "fundamentos"
+    },
+    "poo_clases": {
+      "id": 10,
+      "clave": "poo_clases",
+      "nombre": "Clases y objetos",
+      "area": "poo"
+    },
+    "herencia_polimorfismo": {
+      "id": 11,
+      "clave": "herencia_polimorfismo",
+      "nombre": "Herencia y polimorfismo",
+      "area": "poo"
+    },
+    "diccionarios_conjuntos": {
+      "id": 12,
+      "clave": "diccionarios_conjuntos",
+      "nombre": "Diccionarios y conjuntos",
+      "area": "datos"
+    },
+    "comprensiones": {
+      "id": 13,
+      "clave": "comprensiones",
+      "nombre": "Comprensiones",
+      "area": "datos"
+    },
+    "json_apis": {
+      "id": 14,
+      "clave": "json_apis",
+      "nombre": "JSON y APIs",
+      "area": "datos"
+    },
+    "excepciones": {
+      "id": 15,
+      "clave": "excepciones",
+      "nombre": "Excepciones",
+      "area": "automatizacion"
+    },
+    "archivos": {
+      "id": 16,
+      "clave": "archivos",
+      "nombre": "Archivos",
+      "area": "automatizacion"
+    },
+    "libreria_estandar": {
+      "id": 17,
+      "clave": "libreria_estandar",
+      "nombre": "Librería estándar",
+      "area": "automatizacion"
+    },
+    "modulos": {
+      "id": 18,
+      "clave": "modulos",
+      "nombre": "Módulos",
+      "area": "automatizacion"
+    }
+  },
+  "areas": {
+    "fundamentos": [
+      "bucles",
+      "colecciones",
+      "condicionales",
+      "funciones",
+      "variables_tipos"
+    ],
+    "poo": [
+      "herencia_polimorfismo",
+      "poo_clases"
+    ],
+    "datos": [
+      "comprensiones",
+      "diccionarios_conjuntos",
+      "json_apis"
+    ],
+    "automatizacion": [
+      "archivos",
+      "excepciones",
+      "libreria_estandar",
+      "modulos"
+    ]
+  },
+  "carrera_areas": {
+    "INCO": {
+      "automatizacion": 0.5,
+      "datos": 0.3
+    },
+    "INNI": {
+      "automatizacion": 0.5,
+      "datos": 0.3
+    },
+    "ICOM": {
+      "automatizacion": 0.5,
+      "datos": 0.3
+    },
+    "IROB": {
+      "automatizacion": 0.5,
+      "datos": 0.3
+    },
+    "LMAT": {
+      "datos": 0.5
+    },
+    "LFIS": {
+      "datos": 0.5
+    },
+    "LQUI": {
+      "datos": 0.5
+    },
+    "IQUI": {
+      "datos": 0.5
+    },
+    "IBIO": {
+      "datos": 0.5
+    },
+    "IFOT": {
+      "datos": 0.5
+    },
+    "IALI": {
+      "datos": 0.5
+    },
+    "LBIO": {
+      "datos": 0.5
+    },
+    "IIND": {
+      "automatizacion": 0.5
+    },
+    "IMEC": {
+      "automatizacion": 0.5
+    },
+    "ICIV": {
+      "automatizacion": 0.5
+    },
+    "ITOP": {
+      "automatizacion": 0.5
+    },
+    "LARQ": {
+      "automatizacion": 0.5
+    },
+    "LADM": {
+      "datos": 0.5,
+      "automatizacion": 0.3
+    },
+    "LCPU": {
+      "datos": 0.5,
+      "automatizacion": 0.3
+    },
+    "LECO": {
+      "datos": 0.5,
+      "automatizacion": 0.3
+    },
+    "LNIN": {
+      "datos": 0.5,
+      "automatizacion": 0.3
+    }
+  },
+  "ejercicios_diagnostico": {
+    "9001": 1,
+    "9002": 6,
+    "9003": 2,
+    "9004": 4,
+    "9005": 2
+  }
+}

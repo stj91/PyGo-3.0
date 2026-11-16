@@ -76,6 +76,9 @@ INSTALLED_APPS = [
     # No declara modelos: está aquí solo para que Django encuentre la orden de
     # gestión `migrar_sql` en core/management/commands/.
     "core",
+    # Tampoco declara modelos: está aquí para que Django encuentre las órdenes
+    # de gestión del motor de recomendación en features/motor/management/commands/.
+    "features.motor",
 ]
 
 MIDDLEWARE = [

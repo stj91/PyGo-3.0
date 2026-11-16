@@ -20,7 +20,15 @@ async function request(endpoint, options = {}) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.mensaje || errorData.error || `Error ${response.status}: Solicitud fallida`);
+      const error = new Error(errorData.mensaje || errorData.error || `Error ${response.status}: Solicitud fallida`);
+      error.status = response.status;
+      error.code = errorData.code;
+      throw error;
+    }
+
+    // 204 No Content: no hay cuerpo que parsear.
+    if (response.status === 204) {
+      return null;
     }
 
     return await response.json();
@@ -101,4 +109,26 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(datosPerfil),
     }),
+
+  // Motor de recomendación
+  getAreas: () => request('/motor/areas', { method: 'GET' }),
+
+  getPreguntasColdStart: () => request('/cold-start/preguntas', { method: 'GET' }),
+
+  registrarEvento: (evento) =>
+    request('/eventos', { method: 'POST', body: JSON.stringify(evento), keepalive: true }),
+
+  inscribirse: (cursoId, datos = {}) =>
+    request(`/cursos/${cursoId}/inscripcion`, { method: 'POST', body: JSON.stringify(datos) }),
+
+  getPerfil: (usuarioId) => request(`/perfil/${usuarioId}`, { method: 'GET' }),
+
+  guardarIntereses: (usuarioId, areas) =>
+    request(`/perfil/${usuarioId}/intereses`, { method: 'PUT', body: JSON.stringify({ areas }) }),
+
+  getRecomendaciones: (usuarioId, limite = 3) =>
+    request(`/recomendaciones/cursos?usuario_id=${usuarioId}&limite=${limite}`, { method: 'GET' }),
+
+  enviarRetroalimentacion: (datos) =>
+    request('/retroalimentacion', { method: 'POST', body: JSON.stringify(datos) }),
 };

@@ -1,0 +1,13 @@
+# Dependencias SOLO para los procesos batch del motor de recomendación
+# (backend/entrenamiento/ y las órdenes de gestión que entrenan o evalúan:
+# generar_sinteticos, construir_dataset, entrenar_modelo, evaluar_motor...).
+#
+# La API no las importa nunca: sirve el modelo como JSON con la librería
+# estándar. Instálalas aparte, solo donde se entrene:
+#
+#   pip install -r requirements.txt -r requirements-ml.txt
+
+numpy>=1.24
+pandas>=2.0
+scikit-learn>=1.3
+joblib>=1.3
