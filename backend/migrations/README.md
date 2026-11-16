@@ -32,6 +32,10 @@ es `postgres.<project-ref>`, no `postgres`.
 | `0002_cursos_iniciales.sql` | los 3 cursos creados a mano en el dashboard (PY-101..PY-301) | **sellada** |
 | `0003_cursos_adicionales.sql` | 5 cursos nuevos (PY-401..PY-801), 10 temas, 20 ejercicios, 80 opciones | ejecutada |
 | `0004_carreras_centros.sql` | catálogos `carreras` (30) y `centros` (17), claves ajenas en `usuarios` y relleno de los existentes | ejecutada |
+| `0005_motor_esquema.sql` | motor: limpieza de duplicados, índices únicos, columnas nuevas en `cursos`/`usuario_cursos` y 12 tablas con RLS | pendiente |
+| `0006_motor_catalogo.sql` | motor: áreas y conceptos, etiquetas de cursos y módulos, dificultad/nivel, prerrequisitos, carreras → áreas | pendiente |
+| `0007_diagnostico_inicial.sql` | motor: preguntas del diagnóstico inicial en la base de datos | pendiente |
+| `0008_motor_reglas.sql` | motor: reglas iniciales (filtros y recomendación) | pendiente |
 
 ## Sellar en lugar de ejecutar
 
