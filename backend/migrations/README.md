@@ -36,6 +36,7 @@ es `postgres.<project-ref>`, no `postgres`.
 | `0006_motor_catalogo.sql` | motor: áreas y conceptos, etiquetas de cursos y módulos, dificultad/nivel, prerrequisitos, carreras → áreas | pendiente |
 | `0007_diagnostico_inicial.sql` | motor: preguntas del diagnóstico inicial en la base de datos | pendiente |
 | `0008_motor_reglas.sql` | motor: reglas iniciales (filtros y recomendación) | pendiente |
+| `0009_motor_prerrequisitos_suaves.sql` | motor: prerrequisitos como consejo (F01 apagada, R01 solo Principiante, R07 resta puntos) | pendiente |
 
 ## Sellar en lugar de ejecutar
 
