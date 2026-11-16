@@ -17,12 +17,14 @@ export const Configuracion = () => {
   });
 
   const [toastMsg, setToastMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSave = async (e) => {
     e.preventDefault();
     setLoading(true);
     setToastMsg('');
+    setErrorMsg('');
 
     try {
       const res = await api.actualizarPerfil(user?.id, formData);
@@ -33,10 +35,11 @@ export const Configuracion = () => {
       }
     } catch (err) {
       if (err.isNetworkError) setNetworkError(true);
-      // Fallback local
-      updateUser(formData);
-      setToastMsg('Cambios guardados con éxito');
-      setTimeout(() => setToastMsg(''), 3000);
+      setErrorMsg(
+        err.isNetworkError
+          ? 'No se pudo conectar con el servidor. Tus cambios no se guardaron.'
+          : err.message || 'No se pudieron guardar los cambios.'
+      );
     } finally {
       setLoading(false);
     }
@@ -54,6 +57,13 @@ export const Configuracion = () => {
           <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-emerald-800 font-semibold text-sm shadow-sm transition-all">
             <IconCheck className="w-5 h-5 text-emerald-600" />
             <span>{toastMsg}</span>
+          </div>
+        )}
+
+        {errorMsg && (
+          <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-800 font-semibold text-sm shadow-sm" role="alert">
+            <IconAlertCircle className="w-5 h-5 text-rose-600" />
+            <span>{errorMsg}</span>
           </div>
         )}
 

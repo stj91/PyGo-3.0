@@ -1,15 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Layout } from '../components/Layout';
+import { useUser } from '../context/UserContext';
 import { api } from '../services/api';
-import { mockCursos } from '../data/mockCursos';
+import { registrarVistaCurso } from '../services/eventos';
 import {
   IconArrowLeft,
   IconBook,
   IconChevronRight,
+  IconCircleCheck,
   IconLoader2,
-  IconWifiOff,
+  IconPlayerPlay,
+  IconRefresh,
 } from '@tabler/icons-react';
+
+// Valores de `origen` que acepta el registro de eventos (docs/motor/03 §1, `curso_vista`).
+const ORIGENES = ['catalogo', 'recomendacion', 'dashboard', 'busqueda', 'ruta'];
+
+const esNoImplementado = (err) => err?.status === 501 || err?.code === 'NOT_IMPLEMENTED';
+
+const INSCRIPCION_INICIAL = { estado: 'disponible', error: '' }; // disponible | enviando | inscrito | ya_inscrito | oculto
 
 // Lecciones de un curso real: cada `tema` de la base de datos es una lección.
 const leccionesReales = (curso) =>
@@ -22,59 +32,77 @@ const leccionesReales = (curso) =>
       ejercicios: (tema.ejercicios || []).length,
     }));
 
-// Lecciones del contenido de ejemplo (sin conexión): módulos -> lecciones.
-const leccionesMock = (curso) =>
-  (curso.modulos || []).flatMap((modulo) =>
-    (modulo.lecciones || []).map((leccion) => ({
-      id: leccion.id,
-      titulo: leccion.titulo,
-      descripcion: leccion.teoria?.introduccion,
-      ejercicios: leccion.ejercicio ? 1 : 0,
-    }))
-  );
-
-const MOCK_POR_ID = { 1: 'fundamentos-python', 2: 'estructuras-control', 3: 'poo' };
-
-const buscarMock = (cursoId) =>
-  mockCursos.find((c) => c.id === cursoId || c.id === MOCK_POR_ID[cursoId]) || null;
-
 export const DetalleCurso = () => {
   const { cursoId } = useParams();
   const navigate = useNavigate();
+  const { user } = useUser();
+  const [searchParams] = useSearchParams();
+  const origenParam = searchParams.get('origen');
+  const origen = ORIGENES.includes(origenParam) ? origenParam : 'catalogo';
+  const rid = searchParams.get('rid') || undefined;
 
   const [curso, setCurso] = useState(null);
   const [lecciones, setLecciones] = useState([]);
-  const [sinConexion, setSinConexion] = useState(false);
+  const [recarga, setRecarga] = useState(0);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [inscripcion, setInscripcion] = useState(INSCRIPCION_INICIAL);
+  const vistaRegistrada = useRef(null);
+
+  // Una vista por id de curso.
+  useEffect(() => {
+    const id = Number(cursoId);
+    if (!Number.isInteger(id) || vistaRegistrada.current === id) return;
+    vistaRegistrada.current = id;
+    registrarVistaCurso(id, origen, rid);
+  }, [cursoId, origen, rid]);
+
+  const empezarCurso = async () => {
+    setInscripcion({ estado: 'enviando', error: '' });
+    try {
+      const respuesta = await api.inscribirse(cursoId, { origen, recomendacion_id: rid });
+      setInscripcion({
+        estado: respuesta?.nueva === false ? 'ya_inscrito' : 'inscrito',
+        error: '',
+      });
+    } catch (err) {
+      if (esNoImplementado(err)) {
+        setInscripcion({ estado: 'oculto', error: '' });
+      } else {
+        setInscripcion({
+          estado: 'disponible',
+          error: err.isNetworkError
+            ? 'No se pudo conectar con el servidor. Inténtalo de nuevo.'
+            : err.message || 'No se pudo completar la inscripción.',
+        });
+      }
+    }
+  };
 
   useEffect(() => {
     const cargarCurso = async () => {
       setLoading(true);
       setError('');
-      setSinConexion(false);
+      setInscripcion(INSCRIPCION_INICIAL);
       try {
         const { curso: encontrado } = await api.getCursoPorId(cursoId);
         setCurso(encontrado || null);
         setLecciones(encontrado ? leccionesReales(encontrado) : []);
       } catch (err) {
-        if (err.isNetworkError) {
-          const mock = buscarMock(cursoId);
-          setSinConexion(true);
-          setCurso(mock);
-          setLecciones(mock ? leccionesMock(mock) : []);
-        } else {
-          setCurso(null);
-          setLecciones([]);
-          setError(err.message || 'No se pudo cargar el curso.');
-        }
+        setCurso(null);
+        setLecciones([]);
+        setError(
+          err.isNetworkError
+            ? 'No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.'
+            : err.message || 'No se pudo cargar el curso.'
+        );
       } finally {
         setLoading(false);
       }
     };
 
     cargarCurso();
-  }, [cursoId]);
+  }, [cursoId, recarga]);
 
   if (loading) {
     return (
@@ -91,8 +119,17 @@ export const DetalleCurso = () => {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-          <h3 className="text-xl font-bold text-slate-800">No se encontró el curso solicitado</h3>
+          <h3 className="text-xl font-bold text-slate-800">{error ? 'No se pudo cargar el curso' : 'No se encontró el curso solicitado'}</h3>
           <p className="text-sm text-slate-500">{error || `El curso con ID "${cursoId}" no está disponible actualmente.`}</p>
+          {error && (
+            <button
+              onClick={() => setRecarga((n) => n + 1)}
+              className="flex items-center gap-2 border border-slate-300 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-50 transition-all"
+            >
+              <IconRefresh className="w-4 h-4" />
+              <span>Reintentar</span>
+            </button>
+          )}
           <button
             onClick={() => navigate('/cursos')}
             className="flex items-center gap-2 bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-900 transition-all"
@@ -123,17 +160,43 @@ export const DetalleCurso = () => {
           )}
         </div>
 
-        {sinConexion && (
-          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 text-xs font-medium">
-            <IconWifiOff className="w-4 h-4" />
-            <span>Sin conexión: mostrando contenido de ejemplo.</span>
-          </div>
-        )}
-
         <div>
           <h2 className="text-2xl font-bold text-slate-900">{curso.titulo}</h2>
           <p className="text-sm text-slate-500 mt-1">{curso.descripcion}</p>
         </div>
+
+        {/* Inscripción: orientativa, las lecciones siguen accesibles igualmente. */}
+        {user?.id && inscripcion.estado !== 'oculto' && (
+          <div className="space-y-2">
+            {inscripcion.estado === 'inscrito' || inscripcion.estado === 'ya_inscrito' ? (
+              <span
+                role="status"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+              >
+                <IconCircleCheck className="w-4 h-4" />
+                {inscripcion.estado === 'inscrito' ? 'Inscrito' : 'Ya estás inscrito'}
+              </span>
+            ) : (
+              <button
+                onClick={empezarCurso}
+                disabled={inscripcion.estado === 'enviando'}
+                className="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 disabled:opacity-70 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-sm transition-all"
+              >
+                {inscripcion.estado === 'enviando' ? (
+                  <IconLoader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <IconPlayerPlay className="w-4 h-4" />
+                )}
+                <span>Empezar curso</span>
+              </button>
+            )}
+            {inscripcion.error && (
+              <p role="alert" className="text-xs font-medium text-rose-600">
+                {inscripcion.error}
+              </p>
+            )}
+          </div>
+        )}
 
         {lecciones.length === 0 ? (
           <p className="text-sm text-slate-500">Este curso todavía no tiene lecciones.</p>

@@ -94,7 +94,8 @@ def endpoint(*methods: str) -> Callable:
                 payload, status = _normalize(handler(request, *args, **kwargs))
                 return json_response(payload, status)
             except AppError as error:
-                if error.status_code >= 500:
+                # 501 es una función pendiente de construir, no un fallo: sin traza.
+                if error.status_code >= 500 and error.status_code != 501:
                     logger.error(
                         "Error %s en %s: %s", error.code, request.path, error.message,
                         exc_info=error.cause or error,

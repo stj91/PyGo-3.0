@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { IconSearch, IconBell, IconUser, IconShieldCheck } from '@tabler/icons-react';
+import { IconSearch, IconUser, IconShieldCheck } from '@tabler/icons-react';
 
 export const Header = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
+  const [busqueda, setBusqueda] = useState('');
+
+  // La búsqueda se resuelve en el catálogo, que filtra por título y descripción.
+  const buscar = (e) => {
+    e.preventDefault();
+    const texto = busqueda.trim();
+    navigate(texto ? `/cursos?q=${encodeURIComponent(texto)}` : '/cursos');
+  };
 
   const getLevelBadgeStyle = (nivel) => {
     switch (nivel) {
@@ -19,14 +29,17 @@ export const Header = () => {
   return (
     <header className="h-20 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm">
       {/* Buscador */}
-      <div className="relative w-96">
+      <form onSubmit={buscar} className="relative w-96" role="search">
         <IconSearch className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
         <input
-          type="text"
-          placeholder="Buscar temas, funciones, ejercicios..."
+          type="search"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          aria-label="Buscar cursos"
+          placeholder="Buscar cursos..."
           className="w-full pl-11 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
         />
-      </div>
+      </form>
 
       {/* Información del Usuario y Nivel */}
       <div className="flex items-center gap-5">
@@ -36,12 +49,6 @@ export const Header = () => {
           <span>NIVEL: {user.nivel.toUpperCase()}</span>
         </div>
 
-        {/* Notificaciones */}
-        <button className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors relative">
-          <IconBell className="w-5 h-5" />
-          <span className="w-2 h-2 bg-sky-500 rounded-full absolute top-2 right-2 ring-2 ring-white"></span>
-        </button>
-
         {/* Perfil */}
         <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
           <div className="w-9 h-9 rounded-xl bg-slate-800 text-white flex items-center justify-center font-semibold text-sm">
@@ -49,7 +56,7 @@ export const Header = () => {
           </div>
           <div className="text-left hidden md:block">
             <p className="text-sm font-semibold text-slate-900 leading-tight">{user.nombre}</p>
-            <p className="text-xs text-slate-500">{user.carrera}</p>
+            <p className="text-xs text-slate-500">{user.carreras?.nombre || user.carrera}</p>
           </div>
         </div>
       </div>

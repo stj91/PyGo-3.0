@@ -6,7 +6,6 @@ import { Login } from '../pages/Login';
 import { ColdStart } from '../pages/ColdStart';
 import { Dashboard } from '../pages/Dashboard';
 import { Configuracion } from '../pages/Configuracion';
-import { Temario } from '../pages/Temario';
 
 // Vistas Nuevas Integradas
 import { LandingPage } from '../pages/LandingPage';
@@ -14,6 +13,7 @@ import { Register } from '../pages/Register';
 import { CatalogoCursos } from '../pages/CatalogoCursos';
 import { DetalleCurso } from '../pages/DetalleCurso';
 import { LeccionIndividual } from '../pages/LeccionIndividual';
+import { Perfil } from '../pages/Perfil';
 
 export const AppRoutes = () => {
   return (
@@ -29,7 +29,7 @@ export const AppRoutes = () => {
       {/* Aplicación / Tablero */}
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/configuracion" element={<Configuracion />} />
-      <Route path="/temario" element={<Temario />} />
+      <Route path="/perfil" element={<Perfil />} />
 
       {/* Catálogo de Cursos, Detalle y Lección Individual */}
       <Route path="/cursos" element={<CatalogoCursos />} />

@@ -4,3 +4,7 @@ __pycache__/
 .venv/
 venv/
 *.log
+
+# Salidas del entrenamiento del motor (datos sintéticos, datasets, modelos).
+entrenamiento/datos/
+entrenamiento/modelos/

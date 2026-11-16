@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { useUser } from '../context/UserContext';
+import { iniciarSesionSiHaceFalta } from '../services/eventos';
 import { IconAlertCircle } from '@tabler/icons-react';
 
 export const Layout = ({ children }) => {
   const { networkError } = useUser();
+
+  useEffect(() => {
+    iniciarSesionSiHaceFalta();
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 bg-dot-pattern flex relative">
