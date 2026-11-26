@@ -5,6 +5,7 @@ import { useUser } from '../context/UserContext';
 import { api } from '../services/api';
 import { registrar } from '../services/eventos';
 import { normalizarLeccion } from '../data/normalizarLeccion';
+import { TextoConCodigo } from '../components/TextoConCodigo';
 import { explicacionPlegadaInicial } from '../adaptacion/presentacionLeccion';
 import {
   IconArrowLeft,
@@ -151,7 +152,7 @@ export const LeccionIndividual = () => {
   const contenidoTeoria = (
     <>
       <p className="text-sm text-slate-600">{leccion.teoria?.introduccion}</p>
-      <p className="text-sm text-slate-600">{leccion.teoria?.explicacion}</p>
+      <TextoConCodigo texto={leccion.teoria?.explicacion} className="text-sm text-slate-600 space-y-2" />
       {leccion.teoria?.codigoEjemplo && (
         <div className="bg-slate-900 text-sky-300 font-mono text-xs p-4 rounded-xl">
           <pre>{leccion.teoria.codigoEjemplo}</pre>
@@ -216,7 +217,7 @@ export const LeccionIndividual = () => {
                       Ejercicio {eIdx + 1} de {ejercicios.length}
                     </p>
                   )}
-                  <p className="text-sm font-semibold text-slate-800">{ejercicio.consigna}</p>
+                  <TextoConCodigo texto={ejercicio.consigna} className="text-sm font-semibold text-slate-800 space-y-2" />
 
                   {ejercicio.codigo && (
                     <div className="bg-slate-900 text-slate-100 p-3.5 rounded-xl font-mono text-xs">
@@ -237,7 +238,7 @@ export const LeccionIndividual = () => {
                             elegida ? 'border-sky-500 bg-sky-50/50 text-slate-900 ring-2 ring-sky-500/20' : 'border-slate-200 bg-white'
                           }`}
                         >
-                          {opcion.texto}
+                          <TextoConCodigo texto={opcion.texto} enLinea />
                         </button>
                       );
                     })}
