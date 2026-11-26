@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { api } from '../services/api';
+import { TextoConCodigo } from '../components/TextoConCodigo';
 import { IconCheck, IconArrowRight, IconArrowLeft, IconCode, IconShieldCheck, IconAlertCircle, IconLoader2, IconRefresh } from '@tabler/icons-react';
 
 const FAMILIARIDAD_NULA = 'No sé nada';
@@ -30,35 +31,8 @@ const OPCIONES_DISPONIBILIDAD = [
 
 const CARGANDO = { estado: 'cargando', datos: [], error: '' };
 
-/** Divide una consigna en trozos de texto y bloques de código delimitados con ```. */
-const trozosDeConsigna = (consigna) => {
-  const trozos = [];
-  const patron = /```[\w-]*\n?([\s\S]*?)```/g;
-  let ultimo = 0;
-  let coincidencia;
-  while ((coincidencia = patron.exec(consigna)) !== null) {
-    const texto = consigna.slice(ultimo, coincidencia.index).trim();
-    if (texto) trozos.push({ tipo: 'texto', valor: texto });
-    trozos.push({ tipo: 'codigo', valor: coincidencia[1].replace(/\n$/, '') });
-    ultimo = patron.lastIndex;
-  }
-  const resto = consigna.slice(ultimo).trim();
-  if (resto) trozos.push({ tipo: 'texto', valor: resto });
-  return trozos;
-};
-
 const Consigna = ({ texto }) => (
-  <div className="space-y-4">
-    {trozosDeConsigna(texto || '').map((trozo, idx) =>
-      trozo.tipo === 'codigo' ? (
-        <div key={idx} className="bg-slate-900 text-slate-100 p-4 rounded-xl font-mono text-sm border border-slate-800">
-          <pre>{trozo.valor}</pre>
-        </div>
-      ) : (
-        <h3 key={idx} className="text-lg font-bold text-slate-900 whitespace-pre-line">{trozo.valor}</h3>
-      )
-    )}
-  </div>
+  <TextoConCodigo texto={texto} className="space-y-4 text-lg font-bold text-slate-900" />
 );
 
 const Cargando = ({ texto }) => (
@@ -302,7 +276,7 @@ export const ColdStart = () => {
                     seleccionado={respuestasTecnicas[actual.pregunta.id] === opcion.id}
                     onClick={() => handleAnswerSelect(actual.pregunta.id, opcion.id)}
                   >
-                    <span className="font-medium">{opcion.texto_opcion}</span>
+                    <TextoConCodigo texto={opcion.texto_opcion} enLinea className="font-medium" />
                   </BotonOpcion>
                 ))}
               </div>
