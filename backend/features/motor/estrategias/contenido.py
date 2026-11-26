@@ -17,6 +17,16 @@ _FACTOR_COMPLETADO = 0.5
 _UMBRAL_TEXTO = 0.2
 
 
+"""
+Construimos un vector con los conceptos de interés del alumno y los
+temas que ya aprobó, y calculamos la similitud coseno contra el
+vector de conceptos de cada curso candidato.
+
+We built a vector with the user's interests and topics they've already 
+passed, and calculate the cosine similarity with the concept vector
+of each candidate course.
+"""
+
 def coseno(a: Dict[str, float], b: Dict[str, float]) -> float:
     """Similitud coseno entre dos vectores dispersos. 0.0 si alguno es vacío o nulo. **Pura.**"""
     norma_a = math.sqrt(sum(v * v for v in a.values()))

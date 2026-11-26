@@ -23,6 +23,21 @@ def _seguro(descripcion: str, llamada: Callable[[], object]) -> None:
         logger.exception("Gancho %s: fallo ignorado.", descripcion)
 
 
+"""
+Cuando el usuario empieza a estudiar, el motor necesita actualizar
+su perfil sin acoplarse al módulo de evaluaciones. Para eso implementamos
+un patrón de ganchos. Cada vez que un usuario termina un examen,
+en la siguiente función se dispara de forma aislada bajo un bloque
+_seguro para garantizar que, incluso si el motor fallara, la
+calificación del usuario no se pierda.
+
+When a user starts studying, the engine needs to update their profile
+without being coupled to the evaluation module. That's why we implemented
+a hook pattern. Every time a user finishes an exam, the next following 
+function is triggered independently within a safe block to garanteed 
+that even if the engine fails, the user's grade isn't lost.
+"""
+
 def al_evaluar_modulo(
     usuario_id: str, tema: dict, calificacion: int, detalle: List[dict], aprobado: bool
 ) -> None:
@@ -68,6 +83,18 @@ def al_evaluar_modulo(
             objeto_id=tema_id,
             curso_id=curso_id,
         )
+
+    """
+    En esta parte medicomo cuánto sabe realmente el usuario acerca de cada tema.
+    Cada ejercicio está etiquetado con conceptos de Python (bucles, condicionales,
+    o clases). Actualizamos su nivel de dominio de 0 a 1 usando una media móvil
+    exponencial.
+
+    In this part we measure how much the user really knows about a topic.
+    Every exercise is labeled with Python concepts (loops, conditionals or 
+    classes). We update the user's profiency level on a scale from 0 to 1 using 
+    an exponential moving average. 
+    """
 
     _seguro("al_evaluar_modulo:quiz_intento", evento_intento)
     _seguro("al_evaluar_modulo:dominio", dominio)

@@ -29,6 +29,16 @@ def buscar_nivel(usuario_id: str) -> Optional[Dict[str, Any]]:
 # --- Reglas puras -----------------------------------------------------------
 
 
+"""
+El sistema adapta la interfaz de usuario para evitar sobrecarga cognitiva: 
+si es principiante, ocultamos opciones avanzadas como el ajuste manual de 
+dificultad o las certificaciones.
+
+The system adapts the user interface to avoid the cognitive overload. If
+user is a begginer, we hide advanced features such as manual dificulty or 
+certifications.
+"""
+
 def configuracion_ui(nivel: str) -> Dict[str, Any]:
     """Opciones disponibles para un nivel dado. Pura."""
     return {

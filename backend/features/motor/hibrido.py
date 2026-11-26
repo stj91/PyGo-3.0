@@ -47,6 +47,24 @@ def candidatos_permitidos(perfil: Perfil, contexto: Contexto) -> List[Curso]:
     catalogo = contexto["catalogo"]
     return filtrar(perfil, candidatos(perfil, catalogo), catalogo, contexto.get("reglas") or [])
 
+"""
+El recomendador no depende de un solo algoritmo, sino que es un
+sistema híbrido ponderado que ejecuta un pipeline de 6 etapas en
+cada petición.
+
+The recommender is a weighted hybrid system that runs a pipeline
+of 6 stages on each request.
+"""
+
+
+"""
+On the following function the system detects in what stage is the 
+user. If it's new, thrusts 60% on rules and 40% on interests. When
+courses are done, activates the colaborative filter; and when there's
+a new active model of ML is assigned with 30% of the total weight.
+
+recomendar().
+"""
 
 def modo(perfil: Perfil, contexto: Contexto) -> str:
     """`con_modelo`, `con_historia` o `nuevo` según los datos disponibles. **Pura.**"""
@@ -159,6 +177,10 @@ def continuar(perfil: Perfil, catalogo: Catalogo) -> List[dict]:
     ]
 
 
+"""
+Here we run the whole flow.
+"""
+
 def recomendar(
     perfil: Perfil,
     contexto: Contexto,
@@ -173,6 +195,46 @@ def recomendar(
     catalogo = contexto["catalogo"]
     modo_actual = modo(perfil, contexto)
     salida = {"modo": modo_actual, "items": [], "continuar": continuar(perfil, catalogo)}
+
+    """
+    1. Filtrado duro (candidatos_permitidos): En candidatos.py, descartamos los cursos 
+    en los que ya está inscrito (regla F03). Respecto a los prerrequisitos, aplicamos 
+    la regla F02: si el alumno ya demostró un nivel y un dominio conceptual mayor a 0.6 
+    en el diagnóstico, le damos por cumplido el prerrequisito para no obligarlo a repetir 
+    temas que ya domina.
+
+    2. Puntuación multi-estrategia (_puntuar_todas): Evaluamos cada curso candidato con 
+    nuestras 4 estrategias y normalizamos sus puntajes entre 0 y 1. Si alguna estrategia 
+    falla o no aplica, pesos_para() redistribuye su peso automáticamente entre las 
+    estrategias base.
+
+    3. Diversificación (diversidad.mmr): Para evitar recomendar tres cursos casi idénticos, 
+    aplicamos Maximal Marginal Relevance (MMR), penalizando la similitud entre los cursos 
+    elegidos para ofrecer variedad.
+    
+    4. Explicabilidad (explicaciones.elegir): Finalmente, el motor selecciona la razón con 
+    mayor aporte positivo y genera una explicación en español para el alumno, como 
+    'Es el siguiente paso después de Fundamentos de Python.
+
+    1. Hard Filtering. In candidatos.py, we discard courses where the user is already
+    enrolled in (rule F03). We apply the rule F02: if the user has shown a level and 
+    a profiency level above 0.6 in the diagnostic, we consider the prerequisite fulfilled,
+    so they don't have to repeat topic they already know.
+
+    2.  Multi-strategy scoring. We evaluate each candidate course with our 4 strategies and 
+    we normalized their scores between 0 and 1. If any strategy fails or doesn't apply, 
+    pesos_para() automatically redistributes its weight among the remaining strategies.
+
+    3. Diversification. To avoid recommending 3 almost identical courses, we apply Maximal 
+    Marginal Relevance (MMR) penalizing the similarity between the selected courses to offer 
+    diversity.
+
+    4. Explainability. Finally, the engine selects the reason with the highest positive
+    contribution and generates an explanation on Spanish for the user. For example: Es 
+    el siguiente paso después de Fundamentos de Python.
+
+    Then we can continue with how calculates each strategy in the next file...
+    """
 
     cursos = candidatos_permitidos(perfil, contexto)
     if not cursos:

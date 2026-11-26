@@ -13,6 +13,14 @@ from ..tipos import Catalogo, Evento
 from ._comun import a_entero, a_fecha, a_float, nivel_valido, rango_nivel, temas_por_id
 
 
+"""
+Con ALFA_DOMINIO = 0.3, las evaluaciones recientes tienen mayor peso, pero conservando
+la memoria histórica del desempeño del usuario.
+
+With ALFA_DOMINIO = 0.3, the recent evaluations have more weight, while preserving the
+historical record of the user's performance.
+"""
+
 def nuevo_dominio(
     anterior: Optional[float], puntaje: float, inicial: float, peso: float = 1.0
 ) -> float:

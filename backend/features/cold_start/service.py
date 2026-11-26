@@ -107,6 +107,17 @@ def corregir_diagnostico(
     return resultados
 
 
+"""
+
+Cuando un usuario se registra, el sistema realiza el Cold Start. En base a los aciertos
+asignamos un nivel inicial (Principiante, Intermedio o Avanzado) y capturamos sus áreas
+de interés y disponibilidad de tiempo. Inmediatamente, en la parte de adaptativo...
+
+When a user registers, the system performs the cold start. Based on their correct answers, 
+we assign an initial level (beginner, intermediate or advanced) and collect their areas of 
+and time availability. Then, in the adaptive part...
+"""
+
 def nivel_por_aciertos(aciertos: int) -> str:
     """Traduce un número de aciertos a nivel asignado. Pura.
 

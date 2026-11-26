@@ -27,6 +27,21 @@ _CALIFICACION_ALTA = 90
 # --- Interacciones (puro) ---------------------------------------------------
 
 
+"""
+Aplicamos filtrado colaborativo ítem-ítem. Un proceso por lotes calcula
+la similitud coseno entre pares de cursos basándose en las inscripciones
+históricas de todos los usuarios y guarda la matriz en la tabla
+similitud_cursos. En tiempo real, la API solo consulta esa
+tabla para recomendar cursos que tomaron estudiantes con
+trayectorias similares.
+
+We apply item-item collaborative filtering. A batch process calculates
+the cosine similarity between pairs of courses based on the historical 
+enrollments of all users and stores the matrix in similitud_cursos table. 
+In real time, the API only queries that table to recommend courses 
+taken by users with similar learning paths.
+"""
+
 def _numero(valor: Any) -> Optional[float]:
     if valor is None or valor == "":
         return None

@@ -400,9 +400,18 @@ def puntuar(perfil: Perfil, candidatos: Sequence[Curso], contexto: Contexto) -> 
         })
     return resultado
 
+"""
+Las reglas viven como datos JSON en la base de datos. Construimos un
+evaluador seguro que interpreta operadores (=, <, >) sin usar
+eval(). Por ejemplo, la regla R02 suma puntos si es el siguiente curso
+en la ruta, mientras que R05 penaliza un curso si su prerrequisito está
+actualmente enn repaso o refuerzo.
 
-# --- Carga memoizada --------------------------------------------------------
-
+The rules are stored as JSON data in the database. We built a safe evaluator
+that interprets operators (=, <, >) without using eval(). For example, rule 
+R02 adds 2 points if it's the next course on the route, while the rule R05 
+penalizes a course if its prerequisite is under review or reinforcement.
+"""
 
 def _leer_reglas() -> List[Dict[str, Any]]:
     return supabase.select(
