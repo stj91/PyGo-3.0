@@ -91,7 +91,7 @@ export const Register = () => {
           <div className="w-12 h-12 rounded-2xl bg-slate-800 text-sky-400 flex items-center justify-center mx-auto shadow-md">
             <IconCode className="w-7 h-7" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900">Crear Cuenta en PyGo</h2>
+          <h2 className="text-2xl font-bold text-slate-900">Crear Cuenta en PyCode</h2>
           <p className="text-sm text-slate-500">Regístrate para iniciar tu ruta adaptativa en Python</p>
         </div>
 

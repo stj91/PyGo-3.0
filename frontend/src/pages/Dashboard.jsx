@@ -65,7 +65,7 @@ const BannerBienvenida = ({ user, perfil }) => {
         {perfil && (
           <p className="text-slate-300 text-sm leading-relaxed">
             {completados === 0 && conceptos === 0
-              ? 'Empieza un curso para que PyGo pueda adaptar tu ruta.'
+              ? 'Empieza un curso para que PyCode pueda adaptar tu ruta.'
               : `Has completado ${completados} ${completados === 1 ? 'curso' : 'cursos'} y practicado ${conceptos} ${
                   conceptos === 1 ? 'concepto' : 'conceptos'
                 }.`}

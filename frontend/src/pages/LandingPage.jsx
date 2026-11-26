@@ -121,7 +121,7 @@ export const LandingPage = () => {
       </main>
 
       <footer className="bg-white border-t border-slate-200/80 py-6 text-center text-xs text-slate-500">
-        <p>PyGo — 2026.</p>
+        <p>PyCode — 2026.</p>
       </footer>
     </div>
   );

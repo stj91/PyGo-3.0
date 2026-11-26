@@ -106,7 +106,7 @@ export const Perfil = () => {
       <Layout>
         <div className="flex flex-col items-center justify-center py-20 text-center space-y-2">
           <IconUserCircle className="w-10 h-10 text-slate-400" />
-          <p className="text-sm text-slate-500">Inicia sesión para ver lo que PyGo sabe de ti.</p>
+          <p className="text-sm text-slate-500">Inicia sesión para ver lo que PyCode sabe de ti.</p>
         </div>
       </Layout>
     );
@@ -158,7 +158,7 @@ export const Perfil = () => {
     <Layout>
       <div className="space-y-6 max-w-4xl mx-auto">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Lo que PyGo sabe de ti</h2>
+          <h2 className="text-2xl font-bold text-slate-900">Lo que PyCode sabe de ti</h2>
           <p className="text-sm text-slate-500 mt-1">
             Así te vemos para recomendarte cursos. Si algo no encaja, corrígelo.
           </p>
@@ -294,7 +294,7 @@ export const Perfil = () => {
 
         <p className="flex items-start gap-2 text-xs text-slate-500">
           <IconLock className="w-4 h-4 shrink-0" aria-hidden="true" />
-          <span>PyGo usa tus respuestas y tu avance para recomendarte cursos. No compartimos estos datos.</span>
+          <span>PyCode usa tus respuestas y tu avance para recomendarte cursos. No compartimos estos datos.</span>
         </p>
       </div>
     </Layout>

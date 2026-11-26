@@ -220,7 +220,7 @@ export const ColdStart = () => {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <IconCode className="w-5 h-5 text-sky-400" />
-              <span className="text-sm font-semibold text-slate-300">Diagnóstico de Entrada PyGo</span>
+              <span className="text-sm font-semibold text-slate-300">Diagnóstico de Entrada PyCode</span>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 bg-slate-800 text-sky-400 rounded-full border border-slate-700">
               Paso {paso + 1} de {totalSteps}
@@ -367,7 +367,7 @@ export const ColdStart = () => {
               <div className="space-y-2">
                 <h3 className="text-2xl font-bold text-slate-900">¡Diagnóstico Completado!</h3>
                 <p className="text-sm text-slate-500 max-w-md mx-auto">
-                  El motor adaptativo de PyGo ha procesado tus datos y ha determinado tu nivel de entrada.
+                  El motor adaptativo de PyCode ha procesado tus datos y ha determinado tu nivel de entrada.
                 </p>
               </div>
 
