@@ -37,6 +37,7 @@ es `postgres.<project-ref>`, no `postgres`.
 | `0007_diagnostico_inicial.sql` | motor: preguntas del diagnóstico inicial en la base de datos | pendiente |
 | `0008_motor_reglas.sql` | motor: reglas iniciales (filtros y recomendación) | pendiente |
 | `0009_motor_prerrequisitos_suaves.sql` | motor: prerrequisitos como consejo (F01 apagada, R01 solo Principiante, R07 resta puntos) | pendiente |
+| `0010_formato_codigo.sql` | contenido: código marcado con comillas invertidas y bloques ```python en lecciones, ejercicios y opciones | pendiente |
 
 ## Sellar en lugar de ejecutar
 

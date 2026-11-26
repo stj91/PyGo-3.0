@@ -4,6 +4,7 @@ import { Layout } from '../components/Layout';
 import { useUser } from '../context/UserContext';
 import { api } from '../services/api';
 import { registrarVistaCurso } from '../services/eventos';
+import { TextoConCodigo } from '../components/TextoConCodigo';
 import {
   IconArrowLeft,
   IconBook,
@@ -215,7 +216,9 @@ export const DetalleCurso = () => {
                     <p className="text-xs font-semibold text-slate-400 uppercase">Lección {idx + 1}</p>
                     <h3 className="font-bold text-slate-900">{leccion.titulo}</h3>
                     {leccion.descripcion && (
-                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">{leccion.descripcion}</p>
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                        <TextoConCodigo texto={leccion.descripcion} enLinea />
+                      </p>
                     )}
                     <p className="text-xs text-slate-400 mt-1">
                       {leccion.ejercicios} {leccion.ejercicios === 1 ? 'ejercicio' : 'ejercicios'}
