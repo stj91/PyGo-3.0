@@ -25,7 +25,7 @@ export const LandingPage = () => {
               <div className="w-10 h-10 rounded-xl bg-slate-800 text-sky-400 flex items-center justify-center font-bold shadow-md">
                 <IconCode className="w-6 h-6" />
               </div>
-              <span className="text-xl font-extrabold text-slate-900 tracking-tight">PyGo</span>
+              <span className="text-xl font-extrabold text-slate-900 tracking-tight">PyCode</span>
             </div>
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-xs font-semibold">
               <IconSchool className="w-4 h-4 text-slate-500" />
