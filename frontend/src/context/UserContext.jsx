@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { aplicarTema, modoOscuroDisponible, oscuroDesdePerfil, temaActualEsOscuro } from '../tema/tema';
 
 const UserContext = createContext();
 
@@ -29,6 +30,7 @@ export const UserProvider = ({ children }) => {
     certificaciones_disponibles: false,
   });
   const [networkError, setNetworkError] = useState(false);
+  const [temaOscuro, setTemaOscuro] = useState(temaActualEsOscuro);
 
   // Al recargar la página (F5) el nivel se vuelve a pedir al backend.
   useEffect(() => {
@@ -60,6 +62,11 @@ export const UserProvider = ({ children }) => {
   };
 
   const loginUser = (userData, userToken) => {
+    const oscuro = oscuroDesdePerfil(userData);
+    if (oscuro !== null) {
+      aplicarTema(oscuro);
+      setTemaOscuro(oscuro);
+    }
     setUsuario(sinNivel(userData));
     setNivel(userData?.nivel_asignado || null);
     setToken(userToken);
@@ -88,6 +95,25 @@ export const UserProvider = ({ children }) => {
 
   // `user.nivel` siempre es un texto: el Header llama a toUpperCase() sin comprobarlo.
   const user = usuario ? { ...usuario, nivel: nivel || 'Principiante' } : null;
+  const temaDisponible = modoOscuroDisponible(user, opcionesVisibles);
+
+  // El modo oscuro se desbloquea por nivel: si el alumno aún no lo tiene, se ve
+  // en claro aunque el navegador recuerde otra cosa. Solo cuando ya se conoce el nivel.
+  useEffect(() => {
+    if (usuario && !nivelCargando && !temaDisponible && temaOscuro) {
+      aplicarTema(false);
+      setTemaOscuro(false);
+    }
+  }, [usuario, nivelCargando, temaDisponible, temaOscuro]);
+
+  /** Cambia el tema al instante y lo guarda en el perfil (si hay sesión). */
+  const cambiarTema = async (oscuro) => {
+    aplicarTema(oscuro);
+    setTemaOscuro(oscuro);
+    if (usuario?.id) {
+      await api.actualizarPerfil(usuario.id, { modo_oscuro: oscuro });
+    }
+  };
 
   return (
     <UserContext.Provider
@@ -96,6 +122,9 @@ export const UserProvider = ({ children }) => {
         token,
         nivelCargando,
         opcionesVisibles,
+        temaOscuro,
+        temaDisponible,
+        cambiarTema,
         networkError,
         setNetworkError,
         loginUser,

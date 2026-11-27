@@ -5,15 +5,14 @@ import { api } from '../services/api';
 import { IconSchool, IconClock, IconAdjustmentsHorizontal, IconMoon, IconCheck, IconAlertCircle } from '@tabler/icons-react';
 
 export const Configuracion = () => {
-  const { user, updateUser, opcionesVisibles, setNetworkError } = useUser();
+  const { user, updateUser, opcionesVisibles, setNetworkError, temaOscuro, cambiarTema } = useUser();
   const [formData, setFormData] = useState({
     nombre: user?.nombre || '',
     email: user?.email || '',
     carrera: user?.carrera || '',
     centro: user?.centro || '',
     metaDiariaMinutos: user?.metaDiariaMinutos || 30,
-    dificultadAdaptativa: user?.dificultadAdaptativa || 'Normal',
-    modoOscuro: user?.modoOscuro || false
+    dificultadAdaptativa: user?.dificultadAdaptativa || 'Normal'
   });
 
   const [toastMsg, setToastMsg] = useState('');
@@ -147,8 +146,13 @@ export const Configuracion = () => {
                   </div>
                   <input
                     type="checkbox"
-                    checked={formData.modoOscuro}
-                    onChange={(e) => setFormData({ ...formData, modoOscuro: e.target.checked })}
+                    checked={temaOscuro}
+                    onChange={(e) =>
+                      cambiarTema(e.target.checked).catch(() =>
+                        setErrorMsg('No se pudo guardar el tema en tu perfil; se mantiene en este navegador.')
+                      )
+                    }
+                    aria-label="Modo oscuro"
                     className="w-5 h-5 accent-sky-500 rounded cursor-pointer"
                   />
                 </div>
