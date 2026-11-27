@@ -188,7 +188,7 @@ export const DetalleCurso = () => {
                 ) : (
                   <IconPlayerPlay className="w-4 h-4" />
                 )}
-                <span>Empezar curso</span>
+                <span>Inscribir al curso</span>
               </button>
             )}
             {inscripcion.error && (
