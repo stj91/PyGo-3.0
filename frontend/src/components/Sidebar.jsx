@@ -34,7 +34,7 @@ export const Sidebar = () => {
             <IconCode className="w-6 h-6 stroke-[2.5]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">PyGo</h1>
+            <h1 className="text-xl font-bold text-white tracking-tight">PyCode</h1>
             <p className="text-xs text-slate-400 font-medium">Aprende Python</p>
           </div>
         </div>
