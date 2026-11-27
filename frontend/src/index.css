@@ -15,3 +15,82 @@ body {
   background-color: #f8fafc;
   color: #0f172a;
 }
+/* --- Modo oscuro ------------------------------------------------------------
+   Con <html class="dark"> se reasignan los colores claros de la interfaz a sus
+   equivalentes oscuros. Así todas las páginas cambian a la vez sin repetir una
+   variante `dark:` en cada elemento; la paleta oscura vive solo aquí.
+   `.dark .clase` gana a la utilidad de Tailwind por especificidad. Los elementos
+   que ya son oscuros (barra lateral, banners, botones primarios) no se tocan. */
+
+html.dark { color-scheme: dark; }
+html.dark body { background-color: #020617; color: #e2e8f0; }
+
+/* Superficies */
+.dark .bg-white { background-color: #0f172a; }
+.dark .bg-slate-50 { background-color: #131c2f; }
+.dark .bg-slate-50\/70 { background-color: rgba(19, 28, 47, 0.7); }
+.dark .bg-slate-100 { background-color: #1e293b; }
+.dark .bg-slate-200 { background-color: #334155; }
+.dark .hover\:bg-slate-50:hover { background-color: #1e293b; }
+.dark .hover\:bg-slate-100:hover { background-color: #273449; }
+.dark .hover\:bg-slate-900:hover { background-color: #334155; }
+.dark .bg-slate-900 { border-color: #334155; }
+.dark .bg-dot-pattern { background-image: radial-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px); }
+
+/* Texto */
+.dark .text-slate-900 { color: #f1f5f9; }
+.dark .text-slate-800 { color: #e2e8f0; }
+.dark .text-slate-700 { color: #cbd5e1; }
+.dark .text-slate-600 { color: #a5b4c8; }
+.dark .text-slate-500 { color: #94a3b8; }
+.dark .hover\:text-slate-900:hover { color: #ffffff; }
+.dark .hover\:text-slate-700:hover { color: #e2e8f0; }
+.dark .placeholder-slate-400::placeholder { color: #64748b; }
+
+/* Bordes */
+.dark .border-slate-100 { border-color: #1e293b; }
+.dark .border-slate-200,
+.dark .border-slate-200\/80,
+.dark .border-slate-200\/60 { border-color: #334155; }
+.dark .border-slate-300,
+.dark .hover\:border-slate-300:hover { border-color: #475569; }
+.dark .divide-slate-100 > * + * { border-color: #1e293b; }
+
+/* Acento (sky) */
+.dark .bg-sky-50,
+.dark .bg-sky-50\/50 { background-color: rgba(14, 165, 233, 0.12); }
+.dark .border-sky-200 { border-color: rgba(14, 165, 233, 0.35); }
+.dark .hover\:border-sky-300:hover { border-color: rgba(14, 165, 233, 0.55); }
+.dark .text-sky-700,
+.dark .hover\:text-sky-700:hover,
+.dark .group:hover .group-hover\:text-sky-700 { color: #7dd3fc; }
+.dark .text-sky-600 { color: #38bdf8; }
+.dark .text-sky-900,
+.dark .hover\:text-sky-900:hover { color: #bae6fd; }
+
+/* Estados: éxito, error, aviso */
+.dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.12); }
+.dark .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.2); }
+.dark .border-emerald-200 { border-color: rgba(16, 185, 129, 0.35); }
+.dark .text-emerald-600 { color: #34d399; }
+.dark .text-emerald-700,
+.dark .text-emerald-800 { color: #6ee7b7; }
+
+.dark .bg-rose-50 { background-color: rgba(244, 63, 94, 0.12); }
+.dark .hover\:bg-rose-100:hover { background-color: rgba(244, 63, 94, 0.2); }
+.dark .border-rose-200 { border-color: rgba(244, 63, 94, 0.35); }
+.dark .text-rose-600 { color: #fb7185; }
+.dark .text-rose-700,
+.dark .text-rose-800 { color: #fda4af; }
+
+.dark .bg-amber-50 { background-color: rgba(245, 158, 11, 0.12); }
+.dark .border-amber-200 { border-color: rgba(245, 158, 11, 0.35); }
+.dark .text-amber-600 { color: #fbbf24; }
+.dark .text-amber-700,
+.dark .text-amber-800,
+.dark .text-amber-900 { color: #fcd34d; }
+
+/* Formularios */
+.dark input,
+.dark select,
+.dark textarea { color: #e2e8f0; }

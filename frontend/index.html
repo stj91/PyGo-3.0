@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PyGo</title>
+    <script>
+      // Pinta la página con el tema recordado antes de cargar React (sin destello blanco).
+      try {
+        if (localStorage.getItem('pygo_tema') === 'oscuro') document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

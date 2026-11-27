@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { IconSearch, IconUser, IconShieldCheck } from '@tabler/icons-react';
+import { IconSearch, IconUser, IconShieldCheck, IconMoon, IconSun } from '@tabler/icons-react';
 
 export const Header = () => {
-  const { user } = useUser();
+  const { user, temaOscuro, temaDisponible, cambiarTema } = useUser();
   const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState('');
 
@@ -48,6 +48,18 @@ export const Header = () => {
           <IconShieldCheck className="w-4 h-4" />
           <span>NIVEL: {user.nivel.toUpperCase()}</span>
         </div>
+
+        {temaDisponible && (
+          <button
+            type="button"
+            onClick={() => cambiarTema(!temaOscuro).catch(() => {})}
+            aria-label={temaOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            title={temaOscuro ? 'Modo claro' : 'Modo oscuro'}
+            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
+          >
+            {temaOscuro ? <IconSun className="w-5 h-5" /> : <IconMoon className="w-5 h-5" />}
+          </button>
+        )}
 
         {/* Perfil */}
         <div className="flex items-center gap-3 pl-3 border-l border-slate-200">

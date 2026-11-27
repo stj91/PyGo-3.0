@@ -62,4 +62,4 @@ LAMBDA_DIVERSIDAD = 0.2
 LIMITE_POR_DEFECTO = 3
 LIMITE_MAXIMO = 8
 MAX_CONTINUAR = 3
-MINUTOS_ESTABILIDAD = 30      # reutiliza las últimas recomendaciones si no pasó nada relevante desde entonces
+MINUTOS_ESTABILIDAD = 0      # reutiliza las últimas recomendaciones si no pasó nada relevante desde entonces
